@@ -83,6 +83,8 @@ public class GameController {
 		List<Game> foundGames = new ArrayList<Game>();
 		for(Game game : iGameService.findAll()) {
 			if(game.getGameTitle().contains(fixedTitle)) {
+				System.out.println("op het moment dat het spel nog niet in de database stond: " + game.getGameTitle());
+				System.out.println("op het moment dat het spel nog niet in de database stond: " + game.getReviews());
 				foundGames.add(game);
 			}
 
