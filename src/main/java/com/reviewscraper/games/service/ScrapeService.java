@@ -47,7 +47,7 @@ public class ScrapeService implements IScrapeService {
 	
 
 	
-	public void getScrapeService(String searchString) {
+	public String getScrapeService(String searchString) {
 		
 		List<Game> allGamesInDatabase =  this.igameDAO.findAll();
 		Game foundGame = null;
@@ -74,7 +74,7 @@ public class ScrapeService implements IScrapeService {
 		}
 		
 		
-		if (!isgameinDatabase) {
+		if (isgameinDatabase == false) {
 		//dit stuk creerd een nieuwe review die gescraped word van het internet
 			
 			
@@ -103,6 +103,7 @@ public class ScrapeService implements IScrapeService {
 			System.out.println("review word created!");
 			
 			
+			
 		
 		
 		} else { //end if game is in database
@@ -111,6 +112,11 @@ public class ScrapeService implements IScrapeService {
 			
 			
 		} // end else
+		
+		
+		return zoekUrl;
+		
+		
 		
 	} //end main
 	

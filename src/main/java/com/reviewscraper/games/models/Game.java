@@ -5,6 +5,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -21,6 +23,7 @@ public class Game {
 	private String releaseDate;
 	
 	@OneToMany(mappedBy="game")
+	@JsonManagedReference
 	private List<Review> reviews;
 	
 	

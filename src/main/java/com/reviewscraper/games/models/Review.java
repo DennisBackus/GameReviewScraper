@@ -6,6 +6,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+
 @Entity
 public class Review {
 
@@ -20,6 +23,7 @@ public class Review {
 	private String author;
 	
 	@ManyToOne
+	@JsonBackReference
 	private Game game;
 	
 	public Game getGame() {
