@@ -74,13 +74,33 @@ public class GameController {
 	}
 	
 	@GetMapping("/game/scrape/{gameTitle}")
-	public List<getAllGamesInListDTO> findGameReview(@PathVariable String gameTitle) {
-		iscrapeService.getScrapeService(gameTitle);
+	public gameTitleDTO findGameReview(@PathVariable String gameTitle) {
 		
-		List<getAllGamesInListDTO> testgamesList = new ArrayList<getAllGamesInListDTO>();
+		String fixedTitle = iscrapeService.getScrapeService(gameTitle);
 		
-		return testgamesList; 
-	}
+		gameTitleDTO gametitleDTO = new gameTitleDTO();
+		
+		List<Game> foundGames = new ArrayList<Game>();
+		for(Game game : iGameService.findAll()) {
+			if(game.getGameTitle().contains(fixedTitle)) {
+				foundGames.add(game);
+			}
+
+		}
+		if(foundGames.isEmpty()) {
+			gametitleDTO.setMessage("Found no matches!");
+			gametitleDTO.setSuccess(false);
+		}
+		else {
+			gametitleDTO.setFoundGames(foundGames);
+			gametitleDTO.setMessage("Match found");
+			gametitleDTO.setSuccess(true);
+		}
+		
+		return gametitleDTO;
+		
+		
+	} //end find game review
 	
 	
 	

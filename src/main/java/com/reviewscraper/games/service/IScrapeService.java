@@ -17,7 +17,7 @@ public interface IScrapeService {
 	
 	public Review create(Review address);
 	
-	public void getScrapeService(String searchString);
+	public String getScrapeService(String searchString);
 	
 	
 	
