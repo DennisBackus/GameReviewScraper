@@ -155,6 +155,7 @@ public class ScrapeService implements IScrapeService {
 	        	 if ((output2.equals(null) == false) && output2.equals("") == false) {
 	        		 try {
 	        		 review.setReviewScore(Double.parseDouble(output2));
+	        		 review.setUrl(meegeleverd);
 	        		 } catch (Exception ex ) { 
 	        			 System.out.println("de review was niet te parsen naar een double");
 	        		 }
