@@ -73,9 +73,9 @@ public class GameController {
 		//return this.iPersonService.findAll();
 	}
 	
-	@GetMapping("/game/scrape")
-	public List<getAllGamesInListDTO> findGameReview() { //@PathVariable String gameTitle) {
-		iscrapeService.getScrapeService("witcher 3");
+	@GetMapping("/game/scrape/{gameTitle}")
+	public List<getAllGamesInListDTO> findGameReview(@PathVariable String gameTitle) {
+		iscrapeService.getScrapeService(gameTitle);
 		
 		List<getAllGamesInListDTO> testgamesList = new ArrayList<getAllGamesInListDTO>();
 		
