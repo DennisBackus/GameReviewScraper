@@ -58,7 +58,7 @@ public class ScrapeService implements IScrapeService {
 		
 		origineleZoekurl = origineleZoekurl.trim();
 			
-		String zoekUrl = origineleZoekurl.replace(" ", "+");
+		String zoekGamename = origineleZoekurl.replace(" ", "+");
 		//System.out.println("de return was: " + this.getgoogleSearch(zoekUrl)); 
 		
 		
@@ -80,26 +80,22 @@ public class ScrapeService implements IScrapeService {
 			
 			List<Review> deReviews = new ArrayList<Review>();
 			
-			Review review = this.getgoogleSearch(zoekUrl, new Review());
-			
 			Game nieuweGame = new Game();
+			Review review = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame);
+			
+			
 			review.setAuthor("Karel");
 			review.setGame(nieuweGame);
-			
 			review.setWebsiteName("dikkeSwel");
 			
-			
-	
 			nieuweGame.setGameTitle(origineleZoekurl);
 			nieuweGame.setGameStudio("nog niet implemented");
-			
 			nieuweGame.setReleaseDate("nog niet implemented");
 			nieuweGame.setReviews(deReviews);
 			
+			igameService.create(nieuweGame);     					//dit is de methodcall waarbij daadwerkelijk de game word toegevoegd aan de database
 			
-			igameService.create(nieuweGame);
-			
-			this.create(review);
+			this.create(review);									//hier word de review daadwerkelijk aan de database toegevoegd
 			System.out.println("review word created!");
 			
 			
@@ -107,21 +103,21 @@ public class ScrapeService implements IScrapeService {
 		
 		
 		} else { //end if game is in database
-		//dit stuk zoekt in de database naar de al bekende reviews
+																	//dit stuk zoekt in de database naar de al bekende reviews
 			System.out.println("wollah hij staat er al in pik!!");
 			
 			
 		} // end else
 		
 		
-		return zoekUrl;
+		return zoekGamename;
 		
 		
 		
 	} //end main
 	
 	
-	public Review getgoogleSearch (String searchString, Review review) {
+	public Review getgoogleSearch (String searchString, Review review, Game game) {
 		 String output2 = new String();
 		String deReviewSite = "gameinformer";
 		 
@@ -218,9 +214,8 @@ public class ScrapeService implements IScrapeService {
          
          Element link = doc.select("div.review-summary-score").first();
 
-        // String destring = doc.select("div.review-summary-score").first().text();
          destring2 = doc.select("div.review-summary-score").text();
-         //destring2 = destring2.substring(0, 3);
+    
          
          destring2 = destring2.replaceAll("[^0-9.]", "");
          System.out.println(destring2);
