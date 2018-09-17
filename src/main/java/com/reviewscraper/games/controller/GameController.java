@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.reviewscraper.games.dto.gameTitleDTO;
+import com.reviewscraper.games.dto.getAllGamesInListDTO;
 import com.reviewscraper.games.models.Game;
 import com.reviewscraper.games.service.IGameService;
+
+
 
 @RestController
 public class GameController {
@@ -44,5 +47,31 @@ public class GameController {
 	public Game create(@RequestBody Game game) {
 		return this.iGameService.create(game);
 	}
+	
+	@GetMapping("/game/all")
+	public List<getAllGamesInListDTO> findAll() {
+		
+		List<getAllGamesInListDTO> getAllGamesInListDTO = new ArrayList<getAllGamesInListDTO>();
+		
+		for (Game game : this.iGameService.findAll()) {
+			getAllGamesInListDTO gamelistDTO = new getAllGamesInListDTO();
+			gamelistDTO.setId(game.getId());
+			gamelistDTO.setGameTitle(game.getGameTitle());
+			gamelistDTO.setId(game.getId());
+			gamelistDTO.setGameStudio(game.getGameStudio());
+			gamelistDTO.setReleaseDate(game.getReleaseDate());
+			
+			getAllGamesInListDTO.add(gamelistDTO);
+		}
+		
+		return getAllGamesInListDTO;
+		
+		//return this.iPersonService.findAll();
+	}
+	
+	
+	
+	
+	
 
 }
