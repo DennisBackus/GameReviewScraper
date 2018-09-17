@@ -14,6 +14,7 @@ import com.reviewscraper.games.dto.gameTitleDTO;
 import com.reviewscraper.games.dto.getAllGamesInListDTO;
 import com.reviewscraper.games.models.Game;
 import com.reviewscraper.games.service.IGameService;
+import com.reviewscraper.games.service.IScrapeService;
 
 
 
@@ -21,6 +22,9 @@ import com.reviewscraper.games.service.IGameService;
 public class GameController {
 	@Autowired
 	private IGameService iGameService;
+	
+	@Autowired
+	private IScrapeService iscrapeService;
 
 	@GetMapping("/game/{gameTitle}")
 	public gameTitleDTO findByGameTitle(@PathVariable String gameTitle){
@@ -67,6 +71,15 @@ public class GameController {
 		return getAllGamesInListDTO;
 		
 		//return this.iPersonService.findAll();
+	}
+	
+	@GetMapping("/game/scrape")
+	public List<getAllGamesInListDTO> findGameReview() { //@PathVariable String gameTitle) {
+		iscrapeService.getScrapeService("witcher 3");
+		
+		List<getAllGamesInListDTO> testgamesList = new ArrayList<getAllGamesInListDTO>();
+		
+		return testgamesList; 
 	}
 	
 	

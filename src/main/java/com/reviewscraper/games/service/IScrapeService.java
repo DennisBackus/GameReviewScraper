@@ -15,8 +15,9 @@ public interface IScrapeService {
 
 	List<Review> findByGame(Game game);
 	
+	public Review create(Review address);
 	
-	
+	public void getScrapeService(String searchString);
 	
 	
 	
