@@ -49,23 +49,29 @@ public class ScrapeService implements IScrapeService {
 
 	
 	public String getScrapeService(String searchString) {
+		System.out.println("getScrapeservice wordt gestart!!!");
+		
 		
 		List<Game> allGamesInDatabase =  this.igameDAO.findAll();
-		Game foundGame = null;
+		Game foundGame;
 		boolean isgameinDatabase = false;
 		
 		String origineleZoekString = searchString;
 		
 		origineleZoekString = origineleZoekString.trim();
-			
+		
 		String zoekGamename = origineleZoekString.replace(" ", "+");
 		
 		for (Game gameInDatabase : allGamesInDatabase) {
-			if (searchString.equals(gameInDatabase.getGameTitle())) {
+			System.out.println("voor elke game word geprint:" + gameInDatabase.getGameTitle());
+			
+			if (gameInDatabase.getGameTitle().contains(searchString)) {
+				System.out.println("gameInDatabase: de gametitel = " + gameInDatabase.getGameTitle());
 				foundGame = gameInDatabase;
 				isgameinDatabase = true;
 				break;
 			}
+			
 		}
 		
 		
@@ -75,27 +81,28 @@ public class ScrapeService implements IScrapeService {
 			List<Review> deReviews = new ArrayList<Review>();
 			
 			Game nieuweGame = new Game();
-			
-			Review review = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameinformer");
-			Review reviewIGN = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign");
-			
-			
+			//nieuweGame.setGameTitle(origineleZoekString);
+			//nieuweGame.setGameStudio("nog niet implemented");
+			//nieuweGame.setReleaseDate("nog niet implemented");
 			
 			
+			//deReviews.add
+			Review reviewGameinformer = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameinformer");
+			deReviews.add(reviewGameinformer);
+			
+			//deReviews.add(this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign"));
 			
 			
-			review.setAuthor("Karel");
-			review.setGame(nieuweGame);
-			review.setWebsiteName("dikkeSwel");
 			
-			nieuweGame.setGameTitle(origineleZoekString);
-			nieuweGame.setGameStudio("nog niet implemented");
-			nieuweGame.setReleaseDate("nog niet implemented");
 			nieuweGame.setReviews(deReviews);
 			
 			igameService.create(nieuweGame);     					//dit is de methodcall waarbij daadwerkelijk de game word toegevoegd aan de database
 			
-			this.create(review);									//hier word de review daadwerkelijk aan de database toegevoegd
+			for (Review reviewinList : deReviews) {
+			this.create(reviewinList);					
+			}
+			
+			//hier word de review daadwerkelijk aan de database toegevoegd
 			System.out.println("review word created!");
 			
 			
@@ -147,8 +154,8 @@ public class ScrapeService implements IScrapeService {
 	         System.out.println("delinks: " +delinksfromGoogle);
 	         
 	         for (String meegeleverd : delinksfromGoogle) {
-	        	 
-	        	 reviewScoreOutput = this.getSiteReview(meegeleverd, review, "gameinformer");
+	        	
+	        	 reviewScoreOutput = this.getSiteReview(meegeleverd, review, deReviewSite, game); //en voor de andere sites? 
 	        	 System.out.println("elke output2: " + reviewScoreOutput);
 	        	 
 	        	 if ((reviewScoreOutput.equals(null) == false) && reviewScoreOutput.equals("") == false) {
@@ -169,9 +176,16 @@ public class ScrapeService implements IScrapeService {
 			 } 					//end outter try (docgoogleconnect)
 			catch (Exception ex) {
 				
-				System.out.println("helaaas");
+				System.out.println("helaaas getgoogleSearch is vastgelopen!");
 			} //end catch
 			
+			 
+			 review.setAuthor("Karel");
+			review.setGame(game);
+			review.setWebsiteName("dikkeSwel");
+			 
+			 
+			 
 			 return review;
 		
 		
@@ -181,9 +195,9 @@ public class ScrapeService implements IScrapeService {
 	
 	
 	
-	public String getSiteReview(String degameString, Review review, String reviewSite) {
-		String destring2 = new String();
-
+	public String getSiteReview(String degameString, Review review, String reviewSite, Game game) {
+		String dereturnScore = new String();
+/*
 		 try {
          Document doc = Jsoup.connect(degameString).get();
          String title = doc.title();
@@ -205,52 +219,80 @@ public class ScrapeService implements IScrapeService {
 			
 			System.out.println("helaaas");
 		}
-		
-		 return destring2;
+		*/
+		 
+		 
+		 if (reviewSite.equals("gameinformer")) {
+			 dereturnScore = this.getGameinformerReview(degameString, review, game);
+			 
+		 } /* 
+		 
+		 else if (reviewSite.equals("gameinformer")) {
+			 this.getGameinformerReview();
+			 
+		 }
+		 
+		 */
+		 
+		 
+		 
+		 
+		 
+		 return dereturnScore;
 		
 		
 		
 	} //end siteReview
 	
-	/*
-	public Review getGameinformerReview (String searchString, Review review, Game game, String deReviewSite) {
+	
+	
+	public String getGameinformerReview (String searchString, Review review, Game game) {
 		
-		String destring2 = new String();
-
-		
-		this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameinformer");
-		
-		
-		
+		String dereturnStringGameinformer = new String();
 		
 		 try {
-        Document doc = Jsoup.connect(degameString).get();
+        Document doc = Jsoup.connect(searchString).get();
         String title = doc.title();
         System.out.println(title);
         
-        Element link = doc.select("div.review-summary-score").first();
-
-        destring2 = doc.select("div.review-summary-score").text();
-   
+        Element linkReviewSite = doc.select("div.review-summary-score").first();
         
-        destring2 = destring2.replaceAll("[^0-9.]", "");
-        System.out.println(destring2);
-        System.out.println("dannymessage: dit is de review! " +  destring2);
+        dereturnStringGameinformer = doc.select("div.review-summary-score").text();
+   
+      
+        dereturnStringGameinformer = dereturnStringGameinformer.replaceAll("[^0-9.]", "");
+        System.out.println(dereturnStringGameinformer);
+        System.out.println("dannymessage: dit is de review! " +  dereturnStringGameinformer);
        
+        System.out.println("dannymessage net foor de set vanaf dennis zn stuk (first().OwnText()!!");
+       
+        String gameStudio = doc.select("div.game-details-publisher").first().ownText();
+        String gameReleaseDate = doc.select("div.game-details-release").first().select("time").first().ownText();
+        String gameTitle = doc.select("h1.page-title").first().text();
+        
+        System.out.println("dannymessage net foor de set gametitle!!");
+        game.setGameTitle(gameTitle);
+        game.setGameStudio(gameStudio);
+        game.setReleaseDate(gameReleaseDate);
+        
+        System.out.println("danny message: gamtitle = " + game.getGameTitle());
+        System.out.println("danny message: gamStudio = " + game.getGameStudio());
+        
+		
         
 		 }
 		catch (Exception ex) {
 			
-			System.out.println("helaaas");
+			System.out.println("helaaas getGameinformerReview is ergens vastgelopen!");
 		}
 		
-		 return destring2;
+		 return dereturnStringGameinformer;
 		
 		
 	} //end getgameinformerReview
 	
 	
-	*/
+	
 	
 	
 	
