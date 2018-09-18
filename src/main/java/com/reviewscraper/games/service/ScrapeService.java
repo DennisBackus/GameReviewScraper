@@ -13,6 +13,7 @@ import org.springframework.util.Assert;
 
 import com.reviewscraper.games.dao.IGameDAO;
 import com.reviewscraper.games.dao.IReviewDAO;
+import com.reviewscraper.games.gamestringfixer.GameStringFixer;
 import com.reviewscraper.games.models.Game;
 import com.reviewscraper.games.models.Review;
 
@@ -64,12 +65,18 @@ public class ScrapeService implements IScrapeService {
 		
 		for (Game gameInDatabase : allGamesInDatabase) {
 			System.out.println("voor elke game word geprint:" + gameInDatabase.getGameTitle());
+			//gameInDatabase.getGameTitle().contains(searchString)
 			
-			if (gameInDatabase.getGameTitle().contains(searchString)) {
+			GameStringFixer gamestringfixer = new GameStringFixer();
+			try {
+			if (gamestringfixer.fixSearchString(searchString, gameInDatabase.getGameTitle())) {
 				System.out.println("gameInDatabase: de gametitel = " + gameInDatabase.getGameTitle());
 				foundGame = gameInDatabase;
 				isgameinDatabase = true;
 				break;
+			}
+			} catch (Exception ex) {
+				
 			}
 			
 		}
@@ -268,7 +275,7 @@ public class ScrapeService implements IScrapeService {
        
         String gameStudio = doc.select("div.game-details-publisher").first().ownText();
         String gameReleaseDate = doc.select("div.game-details-release").first().select("time").first().ownText();
-        String gameTitle = doc.select("h1.page-title").first().text();
+        String gameTitle = doc.select("h1.page-title").first().text().toLowerCase();
         
         System.out.println("dannymessage net foor de set gametitle!!");
         game.setGameTitle(gameTitle);
