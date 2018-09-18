@@ -23,6 +23,7 @@ import com.reviewscraper.games.models.Review;
 @Service
 public class ScrapeService implements IScrapeService {
 
+	
 
 	@Autowired 
 	private IReviewDAO iReviewDAO;
@@ -52,43 +53,42 @@ public class ScrapeService implements IScrapeService {
 		List<Game> allGamesInDatabase =  this.igameDAO.findAll();
 		Game foundGame = null;
 		boolean isgameinDatabase = false;
-		//String origineleZoekurl = "darksouls 3";
 		
-		String origineleZoekurl = searchString;
+		String origineleZoekString = searchString;
 		
-		origineleZoekurl = origineleZoekurl.trim();
+		origineleZoekString = origineleZoekString.trim();
 			
-		String zoekGamename = origineleZoekurl.replace(" ", "+");
-		//System.out.println("de return was: " + this.getgoogleSearch(zoekUrl)); 
-		
+		String zoekGamename = origineleZoekString.replace(" ", "+");
 		
 		for (Game gameInDatabase : allGamesInDatabase) {
 			if (searchString.equals(gameInDatabase.getGameTitle())) {
 				foundGame = gameInDatabase;
 				isgameinDatabase = true;
 				break;
-				
 			}
-			
-			
 		}
 		
 		
 		if (isgameinDatabase == false) {
 		//dit stuk creerd een nieuwe review die gescraped word van het internet
 			
-			
 			List<Review> deReviews = new ArrayList<Review>();
 			
 			Game nieuweGame = new Game();
-			Review review = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame);
+			
+			Review review = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameinformer");
+			Review reviewIGN = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign");
+			
+			
+			
+			
 			
 			
 			review.setAuthor("Karel");
 			review.setGame(nieuweGame);
 			review.setWebsiteName("dikkeSwel");
 			
-			nieuweGame.setGameTitle(origineleZoekurl);
+			nieuweGame.setGameTitle(origineleZoekString);
 			nieuweGame.setGameStudio("nog niet implemented");
 			nieuweGame.setReleaseDate("nog niet implemented");
 			nieuweGame.setReviews(deReviews);
@@ -112,86 +112,66 @@ public class ScrapeService implements IScrapeService {
 		
 		return zoekGamename;
 		
-		
-		
 	} //end main
 	
 	
-	public Review getgoogleSearch (String searchString, Review review, Game game) {
-		 String output2 = new String();
-		String deReviewSite = "gameinformer";
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	public Review getgoogleSearch (String searchString, Review review, Game game, String deReviewSite) {
+		 String reviewScoreOutput = new String();
 		 
-		 String url2 = "https://www.google.nl/search?q=" + searchString + "+"  + "review+" + deReviewSite;
-		 System.out.println("de google search url: " + url2);
+		 
+		 String url = "https://www.google.nl/search?q=" + searchString + "+"  + "review+" + deReviewSite;
+		 System.out.println("de google search url: " + url);
 		 
 		 	System.out.println("vanaf hier doen we dat google ding!");
 			 try {
-	         Document doc2 = Jsoup.connect(url2).get();
-	         String title = doc2.title();
+	         Document docgoogleconnect = Jsoup.connect(url).get();
+	         String title = docgoogleconnect.title();
 	         System.out.println(title);
 	         
+	         Elements elementslinksfromGoogle = docgoogleconnect.select("h3.r");
+	         System.out.println("de links: \n" + elementslinksfromGoogle);
+	      
 	         
-	         Element link = doc2.select("h3.r").first();
-	         System.out.println("link = : " + link);
+	         List<String> delinksfromGoogle = elementslinksfromGoogle.select("a").eachAttr("href");
+	         System.out.println("delinks: " +delinksfromGoogle);
 	         
-	         Element linknummer2 = link.select("a").first();
-	         String linkHref = linknummer2.attr("href"); // "http://example.com/"
-	         System.out.println("linkHref: "+linkHref);
-	        
-	         //String output = this.getSiteReview(linkHref, review);
-	         
-	         Elements links = doc2.select("h3.r");
-	         System.out.println("de links: \n" + links);
-	         
-	         //String linkHref2 = links.select("a").attr("href");
-	         //System.out.println("linkhref2: " +linkHref2);
-	         
-	         List<String> delinks = links.select("a").eachAttr("href");
-	         System.out.println("delinks: " +delinks);
-	         
-	         for (String meegeleverd : delinks) {
+	         for (String meegeleverd : delinksfromGoogle) {
 	        	 
-	        	 output2 = this.getSiteReview(meegeleverd, review);
-	        	 System.out.println("elke output2: " + output2);
+	        	 reviewScoreOutput = this.getSiteReview(meegeleverd, review, "gameinformer");
+	        	 System.out.println("elke output2: " + reviewScoreOutput);
 	        	 
-	        	 if ((output2.equals(null) == false) && output2.equals("") == false) {
+	        	 if ((reviewScoreOutput.equals(null) == false) && reviewScoreOutput.equals("") == false) {
 	        		 try {
-	        		 review.setReviewScore(Double.parseDouble(output2));
+	        		 review.setReviewScore(Double.parseDouble(reviewScoreOutput));
 	        		 review.setUrl(meegeleverd);
 	        		 } catch (Exception ex ) { 
 	        			 System.out.println("de review was niet te parsen naar een double");
 	        		 }
 	        		 System.out.println("dit was de juiste site!");
 	        		 break;
-	        	 }
+	        	 } 					//end if reviewscoreoutout
 	        	 System.out.println("niet gevonden!");
 	        	 
-	         }
-	         
-	         
-	         
-	         
-	         //return output2;
-	         
-	         /*
-	         String destring = doc2.select("div.review-summary-score").first().text();
-	         String destring2 = doc2.select("div.review-summary-score").text();
-	         //destring2 = destring2.substring(0, 3);
-	         
-	         destring2 = destring2.replaceAll("[^0-9.]", "");
-	         //System.out.println("de string 2 " + destring2);
-	         
-	         */
+	         } 					//for each loop meegeleverd
 	      
 	         
-			 }
+			 } 					//end outter try (docgoogleconnect)
 			catch (Exception ex) {
 				
 				System.out.println("helaaas");
-			}
+			} //end catch
 			
-			
-		
 			 return review;
 		
 		
@@ -201,11 +181,8 @@ public class ScrapeService implements IScrapeService {
 	
 	
 	
-	public String getSiteReview(String degameString, Review review) {
+	public String getSiteReview(String degameString, Review review, String reviewSite) {
 		String destring2 = new String();
-		String url = "https://www.gameinformer.com/review/monster-hunter-generations-ultimate/touching-up-the-past";
-		//String url = "https://www.gameinformer.com/review/nba-2k19/outworking-and-outplaying-the-competition";
-		//String url = "https://www.gameinformer.com/review/spider-man/spinning-an-amazing-web";
 
 		 try {
          Document doc = Jsoup.connect(degameString).get();
@@ -233,9 +210,47 @@ public class ScrapeService implements IScrapeService {
 		
 		
 		
-	}
+	} //end siteReview
+	
+	/*
+	public Review getGameinformerReview (String searchString, Review review, Game game, String deReviewSite) {
+		
+		String destring2 = new String();
+
+		
+		this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameinformer");
+		
+		
+		
+		
+		 try {
+        Document doc = Jsoup.connect(degameString).get();
+        String title = doc.title();
+        System.out.println(title);
+        
+        Element link = doc.select("div.review-summary-score").first();
+
+        destring2 = doc.select("div.review-summary-score").text();
+   
+        
+        destring2 = destring2.replaceAll("[^0-9.]", "");
+        System.out.println(destring2);
+        System.out.println("dannymessage: dit is de review! " +  destring2);
+       
+        
+		 }
+		catch (Exception ex) {
+			
+			System.out.println("helaaas");
+		}
+		
+		 return destring2;
+		
+		
+	} //end getgameinformerReview
 	
 	
+	*/
 	
 	
 	
