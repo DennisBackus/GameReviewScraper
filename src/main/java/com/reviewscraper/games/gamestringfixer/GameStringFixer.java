@@ -19,6 +19,9 @@ public class GameStringFixer {
 			System.out.println(cosine.apply(input, gameinDatabase));	
 			percentage =  cosine.apply(input, gameinDatabase);
 			
+			//we gaan kijken naar de docs voor apachi commons om bij de jarowinkler te kijken of iets matches
+			//https://commons.apache.org/proper/commons-text/apidocs/index.html
+			
 			
 	// double distance = //StringUtils.getJaroWinklerDistance(input, gameinDatabase);
 		
