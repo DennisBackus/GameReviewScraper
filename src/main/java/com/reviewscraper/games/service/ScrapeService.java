@@ -54,7 +54,7 @@ public class ScrapeService implements IScrapeService {
 		
 		
 		List<Game> allGamesInDatabase =  this.igameDAO.findAll();
-		Game foundGame;
+		String foundGame = new String();;
 		boolean isgameinDatabase = false;
 		
 		String origineleZoekString = searchString;
@@ -71,7 +71,7 @@ public class ScrapeService implements IScrapeService {
 			try {
 			if (gamestringfixer.fixSearchString(searchString, gameInDatabase.getGameTitle())) {
 				System.out.println("gameInDatabase: de gametitel = " + gameInDatabase.getGameTitle());
-				foundGame = gameInDatabase;
+				foundGame = gameInDatabase.getGameTitle();
 				isgameinDatabase = true;
 				break;
 			}
@@ -98,7 +98,7 @@ public class ScrapeService implements IScrapeService {
 			deReviews.add(reviewGameinformer);
 			
 			//deReviews.add(this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign"));
-			
+			System.out.println(nieuweGame.getGameTitle());
 			
 			
 			nieuweGame.setReviews(deReviews);
@@ -113,18 +113,18 @@ public class ScrapeService implements IScrapeService {
 			System.out.println("review word created!");
 			
 			
-			
+			return nieuweGame.getGameTitle();
 		
 		
 		} else { //end if game is in database
 																	//dit stuk zoekt in de database naar de al bekende reviews
 			System.out.println("wollah hij staat er al in pik!!");
-			
+			return foundGame;
 			
 		} // end else
 		
 		
-		return zoekGamename;
+		
 		
 	} //end main
 	
@@ -262,7 +262,7 @@ public class ScrapeService implements IScrapeService {
         String title = doc.title();
         System.out.println(title);
         
-        Element linkReviewSite = doc.select("div.review-summary-score").first();
+        //Element linkReviewSite = doc.select("div.review-summary-score").first();
         
         dereturnStringGameinformer = doc.select("div.review-summary-score").text();
    
@@ -274,8 +274,18 @@ public class ScrapeService implements IScrapeService {
         System.out.println("dannymessage net foor de set vanaf dennis zn stuk (first().OwnText()!!");
        
         String gameStudio = doc.select("div.game-details-publisher").first().ownText();
-        String gameReleaseDate = doc.select("div.game-details-release").first().select("time").first().ownText();
+        System.out.println("Studio doet ie nog");
+       // String gameReleaseDatet = doc.select("div.game-details-release").first().select("time").first().text();
+    //    System.out.println(gameReleaseDatet);
+        String gameReleaseDate = new String();
+        try {
+        gameReleaseDate = doc.select("div.game-details-release").first().select("time").first().ownText();
+        } catch (NullPointerException ex) {
+        	gameReleaseDate = "not found";
+        }
+        System.out.println("Date doet ie nog");
         String gameTitle = doc.select("h1.page-title").first().text().toLowerCase();
+        System.out.println("Titel doet ie nog");
         
         System.out.println("dannymessage net foor de set gametitle!!");
         game.setGameTitle(gameTitle);
