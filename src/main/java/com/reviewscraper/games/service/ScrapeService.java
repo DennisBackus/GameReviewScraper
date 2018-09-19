@@ -3,6 +3,7 @@ package com.reviewscraper.games.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,7 +26,7 @@ import com.reviewscraper.games.models.Review;
 @Service
 public class ScrapeService implements IScrapeService {
 
-
+	private String zoekStringZonderPlusjes;
 
 	@Autowired 
 	private IReviewDAO iReviewDAO;
@@ -59,17 +60,22 @@ public class ScrapeService implements IScrapeService {
 		boolean isgameinDatabase = false;
 
 		String origineleZoekString = searchString;
-		String zoekStringZonderPlusjes = origineleZoekString.replace("+", " ");
+		zoekStringZonderPlusjes = origineleZoekString.replace("+", " ");
 
 		origineleZoekString = origineleZoekString.trim();
 
 		String zoekGamename = origineleZoekString.replace(" ", "+");
 
+		GameStringFixer gamestringfixer = new GameStringFixer();
+		
+		List<Game> gevondenGames = searchGamesInDatabase(allGamesInDatabase, gamepie -> gamestringfixer.fixSearchString(zoekStringZonderPlusjes, gamepie.getGameTitle()));
+		System.out.println("lambda met de gevonden games: " + gevondenGames);
+		
+		
+		
 		for (Game gameInDatabase : allGamesInDatabase) {
 			System.out.println("voor elke game word geprint:" + gameInDatabase.getGameTitle());
 			//gameInDatabase.getGameTitle().contains(searchString)
-
-			GameStringFixer gamestringfixer = new GameStringFixer();
 			try {
 				if (gamestringfixer.fixSearchString(zoekStringZonderPlusjes, gameInDatabase.getGameTitle())) {
 					System.out.println("gameInDatabase: de gametitel = " + gameInDatabase.getGameTitle());
@@ -81,7 +87,7 @@ public class ScrapeService implements IScrapeService {
 
 			}
 
-		}
+		} //end for loop
 
 
 		if (isgameinDatabase == false) {
@@ -146,9 +152,20 @@ public class ScrapeService implements IScrapeService {
 
 
 
+	public List<Game> searchGamesInDatabase (List<Game> deSpellen, Predicate<Game> checker) {
+		List<Game> deSpelleninDatabasegevonden = new ArrayList<Game>();
+		for (Game eenSpel : deSpellen) {
+		if (checker.test(eenSpel))
+			deSpelleninDatabasegevonden.add(eenSpel);
+		 }
+		return deSpelleninDatabasegevonden;
+	}
 
 
-
+	public String getInputOfUser () {
+		
+		return zoekStringZonderPlusjes;
+	}
 
 
 

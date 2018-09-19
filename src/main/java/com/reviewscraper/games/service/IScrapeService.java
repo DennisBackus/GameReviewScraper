@@ -1,6 +1,7 @@
 package com.reviewscraper.games.service;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public interface IScrapeService {
 	
 	public String getScrapeService(String searchString);
 	
+	public List<Game> searchGamesInDatabase (List<Game> deSpellen, Predicate<Game> checker);
 	
-	
+	public String getInputOfUser ();
 }
