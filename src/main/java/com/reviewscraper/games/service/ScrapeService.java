@@ -116,8 +116,26 @@ public class ScrapeService implements IScrapeService {
 			Review reviewInsidegamer = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "insidegamer");
 			deReviews.add(reviewInsidegamer);
 			
-			
+			Review reviewPowerUnlimited = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "powerunlimited");
+			deReviews.add(reviewPowerUnlimited);			
 
+			Review reviewXGN= this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "xgn");
+			deReviews.add(reviewXGN);	
+
+			Review reviewGNL= this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gamer.nl");
+			deReviews.add(reviewGNL);
+			
+			Review reviewLUP= this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "levelup.com");
+			deReviews.add(reviewLUP);
+			
+			Review reviewgameplanet = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameplanet");
+			deReviews.add(reviewgameplanet);
+			
+			Review reviewdestructoid = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "destructoid");
+			deReviews.add(reviewdestructoid);
+			
+			
+			
 			//deReviews.add(this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign"));
 			System.out.println("nieuwegame.gametitle is: " + nieuweGame.getGameTitle());
 
@@ -205,7 +223,7 @@ public class ScrapeService implements IScrapeService {
 		String reviewScoreOutput = new String();
 
 
-		String url = "https://www.google.nl/search?q=" + searchString + "+"  + "review+" + deReviewSite;
+		String url = "https://www.google.nl/search?q=" + searchString + "+"  + "review+" + deReviewSite + "+game";
 		System.out.println("de google search url: " + url);
 
 		System.out.println("vanaf hier doen we dat google ding!");
@@ -227,8 +245,14 @@ public class ScrapeService implements IScrapeService {
 			}
 
 			for (String meegeleverd : delinksfromGoogle) {
-
+				
+				try {
 				reviewScoreOutput = this.getSiteReview(meegeleverd, review, deReviewSite, game); //en voor de andere sites? 
+				} catch (Exception ex) {
+					
+				}
+				
+				
 				System.out.println("elke output2: " + reviewScoreOutput);
 
 				if ((reviewScoreOutput.equals(null) == false) && reviewScoreOutput.equals("") == false) {
@@ -247,6 +271,11 @@ public class ScrapeService implements IScrapeService {
 
 
 		} 					//end outter try (docgoogleconnect)
+		catch (NullPointerException ex) {
+			ex.getMessage();
+		}
+		
+		
 		catch (Exception ex) {
 
 			System.out.println("helaaas getgoogleSearch is vastgelopen!");
@@ -289,10 +318,32 @@ public class ScrapeService implements IScrapeService {
 			dereturnScore = this.getInsidegamerReview(degameString, review, game);
 
 		} 
+		else if (reviewSite.equals("powerunlimited")) {
+			dereturnScore = this.getPowerUnlimitedReview(degameString, review, game);
 
+		} 
+		else if (reviewSite.equals("xgn")) {
+			dereturnScore = this.getXGNReview(degameString, review, game);
+
+		} 
+		else if (reviewSite.equals("gamer.nl")) {
+			dereturnScore = this.getGamerNL(degameString, review, game);
+
+		} 
+		else if (reviewSite.equals("levelup.com")) {
+			dereturnScore = this.getlevelUP(degameString, review, game);
+
+		} else if (reviewSite.equals("gameplanet")) {
+			dereturnScore = this.getGameplanetReview(degameString, review, game);
+
+		} else if (reviewSite.equals("destructoid")) {
+			dereturnScore = this.getDestructoidReview(degameString, review, game);
+
+		} 
 		
-
-
+		
+		
+		
 
 		/* 
 
@@ -427,6 +478,9 @@ public class ScrapeService implements IScrapeService {
 
 		try {
 		Document grDoc = Jsoup.connect(searchString).get();
+		if (!searchString.contains("gamesradar")) {
+			return null;
+		}
 		String grScoreString = grDoc.select("span.score.score-long").first().text();
 		Double grScore = Double.parseDouble(grScoreString) * 2;
 		dereturnStringGamesradar =  grScore.toString();
@@ -464,10 +518,153 @@ public class ScrapeService implements IScrapeService {
 
 		return dereturnStringInsidegamer;
 
-	} //end getignReview
+	}//end getignReview
+	
+	public String getPowerUnlimitedReview (String searchString, Review review, Game game) {
+
+		String dereturnStringPowerUnlimited = new String();
+
+		review.setWebsiteName("powerunlimited");
+
+		try {
+			Document puDoc = Jsoup.connect(searchString).get();
+			String puScoreString = puDoc.select("div.score").first().text();
+			puScoreString = puScoreString.replaceAll("SCORE: ", "");
+			Double puScore = Double.parseDouble(puScoreString)/10;
+			dereturnStringPowerUnlimited = puScore.toString();
+			System.out.println("PowerUnlimited review score is " + puScore);
+		
+		} catch (IOException e) {
+			System.out.println("could not find review from Power Unlimited");
+
+		}
+		
+
+		return dereturnStringPowerUnlimited; 
+
+	}//end gettingReviewPU
+	
+	public String getXGNReview (String searchString, Review review, Game game) {
+
+		String dereturnStringXGN = new String();
+
+		review.setWebsiteName("xgn");
+
+		try {
+			Document xgnDoc = Jsoup.connect(searchString).get();
+			String xgnscoreS = xgnDoc.select("input.knob-rating").val();
+			Double xgnScore = Double.parseDouble(xgnscoreS);
+			dereturnStringXGN = xgnScore.toString();
+			System.out.println("xgn review score is " + xgnScore);
+		
+		} catch (IOException e) {
+			System.out.println("could not find review from XGN");
+
+		}
+		
+
+		return dereturnStringXGN; 
+
+	} //end of xgnReview
+	
+	public String getGamerNL(String searchString, Review review, Game game) {
+
+		String dereturnStringGNL = new String();
+
+		review.setWebsiteName("Gamer NL");
+
+		try {
+			Document gNLDoc = Jsoup.connect(searchString).get();
+			String gNLScoreString = gNLDoc.select("div.rs-review--score").first().child(0).attr("alt");
+			gNLScoreString = gNLScoreString.replaceAll("Score: ", "");
+			Double gNLScore = Double.parseDouble(gNLScoreString)/10;	
+			dereturnStringGNL = gNLScore.toString();
+			System.out.println("GamerNL review score is " + gNLScore);
+		
+		} catch (IOException e) {
+			System.out.println("could not find review from Gamer NL");
+
+		}
+		
+
+		return dereturnStringGNL; 
+
+	} //end of GamerNLReview
+	
+	public String getlevelUP(String searchString, Review review, Game game) {
+
+		String dereturnStringLUP = new String();
+
+		review.setWebsiteName("LevelUp");
+
+		try {
+			Document levelUpDoc = Jsoup.connect(searchString).get();
+			String levelUpscoreS = levelUpDoc.select("canvas#canvas.rating_container.rating").first().attr("rating");
+			Double levelUpScore = Double.parseDouble(levelUpscoreS);
+			System.out.println("LevelUP review score is " + levelUpScore);
+			dereturnStringLUP = levelUpScore.toString();
+			
+
+		
+		} catch (IOException e) {
+			System.out.println("could not find review from Gamer NL");
+
+		} catch (Exception ex) {
+			
+		}
+		
+
+		return dereturnStringLUP; 
+
+	} //end of GamerNLReview
 
 
 
+	public String getGameplanetReview (String searchString, Review review, Game game) {
+
+		String dereturnGameplanet = new String();
+
+		review.setWebsiteName("gameplanet");
+
+
+		try {
+			Document gPlanetDoc = Jsoup.connect(searchString).get();
+			String gPlanetscoreS = gPlanetDoc.select("span.numerator").first().text();
+			Double gPlanetScore = Double.parseDouble(gPlanetscoreS);
+			System.out.println("GamePlanet review score is " + gPlanetScore);
+			dereturnGameplanet =  gPlanetScore.toString();
+		} catch (IOException e) {
+			System.out.println("could not find review from gameplanet");
+
+		} 
+
+		return dereturnGameplanet;
+
+	} //end getgameplanetReview
+
+	public String getDestructoidReview (String searchString, Review review, Game game) {
+
+		String destructoidToString = new String();
+
+		review.setWebsiteName("destructoid");
+
+
+		try {
+			Document destructoidDoc = Jsoup.connect(searchString).get();
+			String destructoidscoreS = destructoidDoc.select("div.gscore").first().text();
+			Double destructoidScore = Double.parseDouble(destructoidscoreS);
+			 destructoidToString = destructoidScore.toString();
+			
+		} catch (IOException e) {
+			System.out.println("could not find review from destructoid");
+
+		} 
+
+		return destructoidToString;
+
+	} //end getgameplanetReview
+	
+	
 
 
 
