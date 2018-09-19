@@ -16,6 +16,15 @@ public class GameStringFixer {
 		
 			JaroWinklerDistance cosine = new JaroWinklerDistance();
 			
+			String gameversioninput = input.replaceAll("[^\\.0123456789]","");
+			String gameversiongameinDatabase = gameinDatabase.replaceAll("[^\\.0123456789]","");
+			
+			if ((gameversioninput.equals(gameversiongameinDatabase) || gameversioninput.isEmpty() ) == false) {
+				System.out.println("andere versie van game!");
+				return false;
+			}
+			
+			
 			System.out.println("hieronder de string van de cosine: " + input+ " en " +gameinDatabase );
 			System.out.println("percentage1: "+cosine.apply(input, gameinDatabase));	
 			percentage =  cosine.apply(input, gameinDatabase);
@@ -40,6 +49,8 @@ public class GameStringFixer {
 		
 		} catch (NullPointerException ex) {
 			System.out.println("de laatste en die is nul lollollol");
+		} catch (Exception ex) {
+			ex.getMessage();
 		}
 		
 		
