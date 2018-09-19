@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.reviewscraper.games.dto.gameTitleDTO;
 import com.reviewscraper.games.dto.getAllGamesInListDTO;
+import com.reviewscraper.games.gamestringfixer.GameStringFixer;
 import com.reviewscraper.games.models.Game;
 import com.reviewscraper.games.service.IGameService;
 import com.reviewscraper.games.service.IScrapeService;
@@ -77,10 +78,22 @@ public class GameController {
 	public gameTitleDTO findGameReview(@PathVariable String gameTitle) {
 		
 		String fixedTitle = iscrapeService.getScrapeService(gameTitle);
+		String zoekStringZonderPlusjes = iscrapeService.getInputOfUser();
+		
+		GameStringFixer deGameStringFixer = new GameStringFixer();
 		
 		gameTitleDTO gametitleDTO = new gameTitleDTO();
 		
-		List<Game> foundGames = new ArrayList<Game>();
+		//List<Game> foundGames = new ArrayList<Game>();
+		
+		
+		
+		List<Game> foundGames = iscrapeService.searchGamesInDatabase(iGameService.findAll(), gamepie -> deGameStringFixer.fixSearchString(zoekStringZonderPlusjes, gamepie.getGameTitle()));
+		System.out.println("lambda met de gevonden games: " + foundGames);
+		//foundGames.addAll(gevondenGames);
+		
+		
+		/*
 		for(Game game : iGameService.findAll()) {
 			if(game.getGameTitle().contains(fixedTitle)) {
 				System.out.println("op het moment dat het spel nog niet in de database stond: " + game.getGameTitle());
@@ -89,6 +102,7 @@ public class GameController {
 			}
 
 		}
+		*/
 		if(foundGames.isEmpty()) {
 			gametitleDTO.setMessage("Found no matches!");
 			gametitleDTO.setSuccess(false);
