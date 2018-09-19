@@ -1,5 +1,6 @@
 package com.reviewscraper.games.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,8 +99,11 @@ public class ScrapeService implements IScrapeService {
 			Review reviewGameinformer = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameinformer");
 			deReviews.add(reviewGameinformer);
 			
+			Review reviewIGN = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign");
+			deReviews.add(reviewIGN);
+			
 			//deReviews.add(this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign"));
-			System.out.println(nieuweGame.getGameTitle());
+			System.out.println("nieuwegame.gametitle is: " + nieuweGame.getGameTitle());
 			
 			
 			nieuweGame.setReviews(deReviews);
@@ -190,7 +194,7 @@ public class ScrapeService implements IScrapeService {
 			 
 			 review.setAuthor("Karel");
 			review.setGame(game);
-			review.setWebsiteName("dikkeSwel");
+			
 			 
 			 
 			 
@@ -205,35 +209,17 @@ public class ScrapeService implements IScrapeService {
 	
 	public String getSiteReview(String degameString, Review review, String reviewSite, Game game) {
 		String dereturnScore = new String();
-/*
-		 try {
-         Document doc = Jsoup.connect(degameString).get();
-         String title = doc.title();
-         System.out.println(title);
-         
-         Element link = doc.select("div.review-summary-score").first();
 
-         destring2 = doc.select("div.review-summary-score").text();
-    
-         
-         destring2 = destring2.replaceAll("[^0-9.]", "");
-         System.out.println(destring2);
-         System.out.println("dannymessage: dit is de review! " +  destring2);
-        
-         
-         
-		 }
-		catch (Exception ex) {
-			
-			System.out.println("helaaas");
-		}
-		*/
-		 
 		 
 		 if (reviewSite.equals("gameinformer")) {
 			 dereturnScore = this.getGameinformerReview(degameString, review, game);
 			 
-		 } /* 
+		 } else if (reviewSite.equals("ign")) {
+			 dereturnScore = this.getIGNReview(degameString, review, game);
+			 
+		 } 
+		 
+		 /* 
 		 
 		 else if (reviewSite.equals("gameinformer")) {
 			 this.getGameinformerReview();
@@ -257,6 +243,8 @@ public class ScrapeService implements IScrapeService {
 	public String getGameinformerReview (String searchString, Review review, Game game) {
 		
 		String dereturnStringGameinformer = new String();
+		
+		review.setWebsiteName("Gameinformer");
 		
 		 try {
         Document doc = Jsoup.connect(searchString).get();
@@ -310,6 +298,27 @@ public class ScrapeService implements IScrapeService {
 	} //end getgameinformerReview
 	
 	
+	public String getIGNReview (String searchString, Review review, Game game) {
+		
+	String dereturnStringIGN = new String();
+	
+	review.setWebsiteName("IGN");
+	
+	Document ignDoc;
+	try {
+		ignDoc = Jsoup.connect(searchString).get();
+		dereturnStringIGN = ignDoc.select("span.score").first().text();
+		//Double ignScore = Double.parseDouble(ignScoreS);	
+		System.out.println("ign review score is " + dereturnStringIGN);
+	} catch (IOException e) {
+		System.out.println("could not find review from IGN");
+		
+	}
+	
+	return dereturnStringIGN;
+	
+	}
+
 	
 	
 	
@@ -317,4 +326,4 @@ public class ScrapeService implements IScrapeService {
 	
 	
 	
-}
+} //end class
