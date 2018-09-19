@@ -102,6 +102,10 @@ public class ScrapeService implements IScrapeService {
 			Review reviewIGN = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign");
 			deReviews.add(reviewIGN);
 			
+			Review reviewGamespot = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gamespot");
+			deReviews.add(reviewGamespot);
+			
+			
 			//deReviews.add(this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign"));
 			System.out.println("nieuwegame.gametitle is: " + nieuweGame.getGameTitle());
 			
@@ -217,7 +221,14 @@ public class ScrapeService implements IScrapeService {
 		 } else if (reviewSite.equals("ign")) {
 			 dereturnScore = this.getIGNReview(degameString, review, game);
 			 
+		 } else if (reviewSite.equals("gamespot")) {
+			 dereturnScore = this.getGamespotReview(degameString, review, game);
+			 
 		 } 
+		 
+		 
+		 
+		 
 		 
 		 /* 
 		 
@@ -317,9 +328,32 @@ public class ScrapeService implements IScrapeService {
 	
 	return dereturnStringIGN;
 	
-	}
+	} //end getignReview
 
 	
+	
+	public String getGamespotReview (String searchString, Review review, Game game) {
+		
+		String dereturnStringIGN = new String();
+		
+		review.setWebsiteName("Gamespot");
+		
+		
+		try {
+		Document gsDoc = Jsoup.connect(searchString).get();
+		String gsScoreString = gsDoc.select("div.gs-score__cell").first().text();
+		Double gsScore = Double.parseDouble(gsScoreString);	
+		System.out.println("Gamespot review score is " + gsScore);
+		dereturnStringIGN =  gsScore.toString();
+		} catch (IOException e) {
+			System.out.println("could not find review from Gamespot");
+			
+		} 
+		
+		return dereturnStringIGN;
+		
+		} //end getignReview
+
 	
 	
 	
