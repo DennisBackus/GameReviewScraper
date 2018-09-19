@@ -58,6 +58,7 @@ public class ScrapeService implements IScrapeService {
 		boolean isgameinDatabase = false;
 		
 		String origineleZoekString = searchString;
+		String zoekStringZonderPlusjes = origineleZoekString.replace("+", " ");
 		
 		origineleZoekString = origineleZoekString.trim();
 		
@@ -69,7 +70,7 @@ public class ScrapeService implements IScrapeService {
 			
 			GameStringFixer gamestringfixer = new GameStringFixer();
 			try {
-			if (gamestringfixer.fixSearchString(searchString, gameInDatabase.getGameTitle())) {
+			if (gamestringfixer.fixSearchString(zoekStringZonderPlusjes, gameInDatabase.getGameTitle())) {
 				System.out.println("gameInDatabase: de gametitel = " + gameInDatabase.getGameTitle());
 				foundGame = gameInDatabase.getGameTitle();
 				isgameinDatabase = true;
