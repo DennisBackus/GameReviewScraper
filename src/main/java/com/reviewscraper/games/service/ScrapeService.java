@@ -196,7 +196,6 @@ public class ScrapeService implements IScrapeService {
 			} //end catch
 			
 			 
-			 review.setAuthor("Karel");
 			review.setGame(game);
 			
 			 

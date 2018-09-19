@@ -22,6 +22,12 @@ public class Game {
 	private String gameStudio;
 	private String releaseDate;
 	
+	private double avgScore;
+	private double topScore;
+	private double lowestScore;
+	
+	
+	
 	@OneToMany(mappedBy="game")
 	@JsonManagedReference
 	private List<Review> reviews;
@@ -57,5 +63,24 @@ public class Game {
 	public void setReviews(List<Review> reviews) {
 		this.reviews = reviews;
 	}
+	public double getAvgScore() {
+		return avgScore;
+	}
+	public void setAvgScore(double avgScore) {
+		this.avgScore = avgScore;
+	}
+	public double getTopScore() {
+		return topScore;
+	}
+	public void setTopScore(double topScore) {
+		this.topScore = topScore;
+	}
+	public double getLowestScore() {
+		return lowestScore;
+	}
+	public void setLowestScore(double lowestScore) {
+		this.lowestScore = lowestScore;
+	}
+	
 
 }
