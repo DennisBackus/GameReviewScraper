@@ -84,16 +84,16 @@ public class GameController {
 		
 		gameTitleDTO gametitleDTO = new gameTitleDTO();
 		
-		List<Game> foundGames = new ArrayList<Game>();
+		//List<Game> foundGames = new ArrayList<Game>();
 		
 		
 		
-		List<Game> gevondenGames = iscrapeService.searchGamesInDatabase(iGameService.findAll(), gamepie -> deGameStringFixer.fixSearchString(zoekStringZonderPlusjes, gamepie.getGameTitle()));
-		System.out.println("lambda met de gevonden games: " + gevondenGames);
-		foundGames.addAll(gevondenGames);
+		List<Game> foundGames = iscrapeService.searchGamesInDatabase(iGameService.findAll(), gamepie -> deGameStringFixer.fixSearchString(zoekStringZonderPlusjes, gamepie.getGameTitle()));
+		System.out.println("lambda met de gevonden games: " + foundGames);
+		//foundGames.addAll(gevondenGames);
 		
 		
-		
+		/*
 		for(Game game : iGameService.findAll()) {
 			if(game.getGameTitle().contains(fixedTitle)) {
 				System.out.println("op het moment dat het spel nog niet in de database stond: " + game.getGameTitle());
@@ -102,6 +102,7 @@ public class GameController {
 			}
 
 		}
+		*/
 		if(foundGames.isEmpty()) {
 			gametitleDTO.setMessage("Found no matches!");
 			gametitleDTO.setSuccess(false);

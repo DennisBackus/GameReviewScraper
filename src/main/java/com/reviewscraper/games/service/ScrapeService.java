@@ -72,7 +72,6 @@ public class ScrapeService implements IScrapeService {
 		System.out.println("lambda met de gevonden games: " + gevondenGames);
 		
 		
-		
 		for (Game gameInDatabase : allGamesInDatabase) {
 			System.out.println("voor elke game word geprint:" + gameInDatabase.getGameTitle());
 			//gameInDatabase.getGameTitle().contains(searchString)
@@ -122,7 +121,8 @@ public class ScrapeService implements IScrapeService {
 			//deReviews.add(this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign"));
 			System.out.println("nieuwegame.gametitle is: " + nieuweGame.getGameTitle());
 
-
+			nieuweGame.setAvgScore(getScoreTypeFromReviews(deReviews));
+			
 			nieuweGame.setReviews(deReviews);
 
 			igameService.create(nieuweGame);     					//dit is de methodcall waarbij daadwerkelijk de game word toegevoegd aan de database
@@ -159,6 +159,24 @@ public class ScrapeService implements IScrapeService {
 			deSpelleninDatabasegevonden.add(eenSpel);
 		 }
 		return deSpelleninDatabasegevonden;
+	}
+	
+	public double getScoreTypeFromReviews (List<Review> deReviews) {
+		List<Double> deScores = new ArrayList<Double>();
+		double deScore = 0;
+		
+		for (Review eenReview : deReviews) {
+			if (eenReview.getReviewScore() != 0) {
+				deScores.add(eenReview.getReviewScore());
+			}
+			 } //end for loop
+		
+		for (double eenScore : deScores) {
+			deScore += eenScore;
+			
+		}
+		deScore = (deScore/deScores.size());
+		return deScore;
 	}
 
 
