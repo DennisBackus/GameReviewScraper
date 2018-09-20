@@ -25,13 +25,21 @@ public class GameStringFixer {
 			}
 			
 			
-			System.out.println("hieronder de string van de cosine: " + input+ " en " +gameinDatabase );
-			System.out.println("percentage1: "+cosine.apply(input, gameinDatabase));	
-			percentage =  cosine.apply(input, gameinDatabase);
+
+			String inputZonderSpatieofStreep = input.replaceAll("[- ]", "");
+			String gameinDatabaseZonderSpatieofStreep = gameinDatabase.replaceAll("[- ]", "");
 			
 			
-			if (gameinDatabase.contains(input)) {
+			System.out.println("hieronder de string van de cosine: " + inputZonderSpatieofStreep+ " en " +gameinDatabaseZonderSpatieofStreep );
+			System.out.println("percentage1: "+cosine.apply(inputZonderSpatieofStreep, gameinDatabaseZonderSpatieofStreep));	
+			percentage =  cosine.apply(inputZonderSpatieofStreep, gameinDatabaseZonderSpatieofStreep);
+			
+			
+			System.out.println("dit is de test om te kijken of de input in de gamedatabase voorkomt!!!");
+			System.out.println("input: " + inputZonderSpatieofStreep + " gamedatabse: " + gameinDatabaseZonderSpatieofStreep);
+			if (gameinDatabaseZonderSpatieofStreep.contains(inputZonderSpatieofStreep)) {
 				System.out.println("dannymessage: input contains gameindatabase!");
+				System.out.println("in de test of hij uberhaupt erin voor komt!!!");
 				return true;
 			}
 			
