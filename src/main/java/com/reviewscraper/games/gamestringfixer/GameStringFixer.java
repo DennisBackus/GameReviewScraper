@@ -16,8 +16,23 @@ public class GameStringFixer {
 		
 			JaroWinklerDistance cosine = new JaroWinklerDistance();
 			
-			String gameversioninput = input.replaceAll("[^\\.0123456789]","");
-			String gameversiongameinDatabase = gameinDatabase.replaceAll("[^\\.0123456789]","");
+			
+			String gameversioninputlowecase = input.toLowerCase();
+			String gameversiongameinDatabaselowecase = gameinDatabase.toLowerCase();
+			
+			
+			String gameversioninputfixiiior3 = gameversioninputlowecase.replace("iii", "3");
+			String gameversiongameinDatabasefixiiior3 = gameversiongameinDatabaselowecase.replace("iii", "3");
+			
+			gameversioninputfixiiior3 = gameversioninputfixiiior3.replace("ii", "2");
+			gameversiongameinDatabasefixiiior3 = gameversiongameinDatabasefixiiior3.replace("ii", "2");
+			
+			gameversioninputfixiiior3 = gameversioninputfixiiior3.replace(" i", "1");
+			gameversiongameinDatabasefixiiior3 = gameversiongameinDatabasefixiiior3.replace(" i", "1");
+			
+			
+			String gameversioninput = gameversioninputfixiiior3.replaceAll("[^\\.0123456789]","");
+			String gameversiongameinDatabase = gameversiongameinDatabasefixiiior3.replaceAll("[^\\.0123456789]","");
 			
 			if ((gameversioninput.equals(gameversiongameinDatabase) || gameversioninput.isEmpty() ) == false) {
 				System.out.println("andere versie van game!");
