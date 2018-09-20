@@ -1,6 +1,7 @@
 package com.reviewscraper.games.service;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -213,7 +214,9 @@ public class ScrapeService implements IScrapeService {
 			deScore += eenScore;
 			
 		}
-		deScore = (deScore/deScores.size());
+		DecimalFormat df2 = new DecimalFormat(".##");
+		String deScoretijdelijk =  df2.format((deScore/deScores.size()));
+		deScore = Double.parseDouble(deScoretijdelijk);
 		game.setTopScore(topScore);
 		game.setLowestScore(lowestScore);
 		return deScore;
