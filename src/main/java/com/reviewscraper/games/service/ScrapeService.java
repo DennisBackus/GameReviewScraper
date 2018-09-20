@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.reviewscraper.exceptionhandelers.GameNotTheSameException;
 import com.reviewscraper.games.dao.IGameDAO;
 import com.reviewscraper.games.dao.IReviewDAO;
 import com.reviewscraper.games.gamestringfixer.GameStringFixer;
@@ -25,6 +26,8 @@ import com.reviewscraper.games.models.Review;
 
 @Service
 public class ScrapeService implements IScrapeService {
+	
+	private int maxTries = 0;
 
 	private String zoekStringZonderPlusjes;
 
@@ -99,42 +102,42 @@ public class ScrapeService implements IScrapeService {
 			//nieuweGame.setGameStudio("nog niet implemented");
 			//nieuweGame.setReleaseDate("nog niet implemented");
 
-
+			try {
 			//deReviews.add
 			Review reviewGameinformer = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameinformer");
 			deReviews.add(reviewGameinformer);
 
-			Review reviewIGN = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign");
+			Review reviewIGN = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "ign");
 			deReviews.add(reviewIGN);
 
-			Review reviewGamespot = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gamespot");
+			Review reviewGamespot = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "gamespot");
 			deReviews.add(reviewGamespot);
 
-			Review reviewGamesradar = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gamesradar");
+			Review reviewGamesradar = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "gamesradar");
 			deReviews.add(reviewGamesradar);
 			
-			Review reviewInsidegamer = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "insidegamer");
+			Review reviewInsidegamer = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "insidegamer");
 			deReviews.add(reviewInsidegamer);
 			
-			Review reviewPowerUnlimited = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "powerunlimited");
+			Review reviewPowerUnlimited = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "powerunlimited");
 			deReviews.add(reviewPowerUnlimited);			
 
-			Review reviewXGN= this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "xgn");
+			Review reviewXGN= this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "xgn");
 			deReviews.add(reviewXGN);	
 
-			Review reviewGNL= this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gamer.nl");
+			Review reviewGNL= this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "gamer.nl");
 			deReviews.add(reviewGNL);
 			
-			Review reviewLUP= this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "levelup.com");
+			Review reviewLUP= this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "levelup.com");
 			deReviews.add(reviewLUP);
 			
-			Review reviewgameplanet = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameplanet");
+			Review reviewgameplanet = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "gameplanet");
 			deReviews.add(reviewgameplanet);
 			
-			Review reviewdestructoid = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "destructoid");
+			Review reviewdestructoid = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "destructoid");
 			deReviews.add(reviewdestructoid);
 			
-			Review reviewImpulsegamer = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "impulsegamer");
+			Review reviewImpulsegamer = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "impulsegamer");
 			deReviews.add(reviewImpulsegamer);
 			
 			
@@ -158,6 +161,12 @@ public class ScrapeService implements IScrapeService {
 
 			return nieuweGame.getGameTitle();
 
+			} catch (GameNotTheSameException ex) {
+				ex.printStackTrace();
+				return "no Game found";
+				
+			}
+			
 
 		} else { //end if game is in database
 			//dit stuk zoekt in de database naar de al bekende reviews
@@ -222,7 +231,7 @@ public class ScrapeService implements IScrapeService {
 
 
 
-	public Review getgoogleSearch (String searchString, Review review, Game game, String deReviewSite) {
+	public Review getgoogleSearch (String searchString, Review review, Game game, String deReviewSite) throws GameNotTheSameException {
 		String reviewScoreOutput = new String();
 
 
@@ -243,15 +252,28 @@ public class ScrapeService implements IScrapeService {
 			List<String> delinksfromGoogle = elementslinksfromGoogle.select("a").eachAttr("href");
 			System.out.println("delinks: " +delinksfromGoogle);
 			
-			if (delinksfromGoogle.isEmpty()) {
+			
+			if (delinksfromGoogle.isEmpty() && maxTries < 6) {
+				maxTries++;
 				getgoogleSearch(searchString, review, game, deReviewSite);
+				
+			} else {
+				maxTries = 0;
 			}
 
 			for (String meegeleverd : delinksfromGoogle) {
 				
 				try {
-				reviewScoreOutput = this.getSiteReview(meegeleverd, review, deReviewSite, game); //en voor de andere sites? 
-				} catch (Exception ex) {
+				reviewScoreOutput = this.getSiteReview(meegeleverd, review, deReviewSite, game, searchString); //en voor de andere sites? 
+				if (reviewScoreOutput.equals("null")) {
+					System.out.println("de GameNotTheSameException is trowns!!!");
+					throw new GameNotTheSameException();
+					
+				}
+				} catch (GameNotTheSameException ex) {
+					throw new GameNotTheSameException();
+				}
+				 catch (Exception ex) {
 					
 				}
 				
@@ -274,6 +296,10 @@ public class ScrapeService implements IScrapeService {
 
 
 		} 					//end outter try (docgoogleconnect)
+		catch (GameNotTheSameException ex) {
+			throw new GameNotTheSameException();
+		}
+		
 		catch (NullPointerException ex) {
 			ex.getMessage();
 		}
@@ -301,13 +327,13 @@ public class ScrapeService implements IScrapeService {
 
 
 
-	public String getSiteReview(String degameString, Review review, String reviewSite, Game game) {
+	public String getSiteReview(String degameString, Review review, String reviewSite, Game game, String origineleZoekTerm) {
 		String dereturnScore = new String();
 
 		
 
 		if (reviewSite.equals("gameinformer")) {
-			dereturnScore = this.getGameinformerReview(degameString, review, game);
+			dereturnScore = this.getGameinformerReview(degameString, review, game, origineleZoekTerm);
 
 		} else if (reviewSite.equals("ign")) {
 			dereturnScore = this.getIGNReview(degameString, review, game);
@@ -373,7 +399,7 @@ public class ScrapeService implements IScrapeService {
 
 
 
-	public String getGameinformerReview (String searchString, Review review, Game game) {
+	public String getGameinformerReview (String searchString, Review review, Game game, String origineleZoekTerm) {
 
 		String dereturnStringGameinformer = new String();
 
@@ -412,7 +438,17 @@ public class ScrapeService implements IScrapeService {
 			System.out.println("Date doet ie nog");
 			String gameTitle = doc.select("h1.page-title").first().text().toLowerCase();
 			System.out.println("Titel doet ie nog");
-
+			
+			
+			GameStringFixer controle = new GameStringFixer();
+			boolean isGameWelEchtHetZelfde = controle.fixSearchString(origineleZoekTerm, gameTitle);
+			System.out.println("vanaf hier doet hij de controle of het niet gewoon bullshit is: " + isGameWelEchtHetZelfde);
+			if (!isGameWelEchtHetZelfde) {
+				System.out.println("dannymessage: JA HIJ IS ECHT FALSE HOOR");
+				return "null";
+			}
+			
+			
 			System.out.println("dannymessage net foor de set gametitle!!");
 			game.setGameTitle(gameTitle);
 			game.setGameStudio(gameStudio);
@@ -420,7 +456,6 @@ public class ScrapeService implements IScrapeService {
 
 			System.out.println("danny message: gamtitle = " + game.getGameTitle());
 			System.out.println("danny message: gamStudio = " + game.getGameStudio());
-
 
 
 		}
