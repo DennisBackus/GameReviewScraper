@@ -406,7 +406,7 @@ public class ScrapeService implements IScrapeService {
 
 		String dereturnStringGameinformer = new String();
 
-		review.setWebsiteName("Gameinformer");
+		review.setWebsiteName("Game Informer");
 		
 		if (!searchString.contains("gameinformer")) {
 			return null;
@@ -416,19 +416,23 @@ public class ScrapeService implements IScrapeService {
 			Document doc = Jsoup.connect(searchString).get();
 			String title = doc.title();
 			System.out.println(title);
-
+			
 			//Element linkReviewSite = doc.select("div.review-summary-score").first();
 
 			dereturnStringGameinformer = doc.select("div.review-summary-score").text();
-
+			System.out.println("Uhm hier zou de review score geparsed moeten worden: " + dereturnStringGameinformer);
 
 			dereturnStringGameinformer = dereturnStringGameinformer.replaceAll("[^0-9.]", "");
 			System.out.println(dereturnStringGameinformer);
 			System.out.println("dannymessage: dit is de review! " +  dereturnStringGameinformer);
 
 			System.out.println("dannymessage net foor de set vanaf dennis zn stuk (first().OwnText()!!");
-
-			String gameStudio = doc.select("div.game-details-publisher").first().ownText();
+			String gameStudio = new String();
+			if(doc.select("div.game-details-developer").first().ownText() != null) {
+			 gameStudio = doc.select("div.game-details-developer").first().ownText();}
+			else {
+			 gameStudio = doc.select("div.game-details-publisher").first().ownText();	
+			}
 			System.out.println("Studio doet ie nog");
 			// String gameReleaseDatet = doc.select("div.game-details-release").first().select("time").first().text();
 			//    System.out.println(gameReleaseDatet);
@@ -505,7 +509,7 @@ public class ScrapeService implements IScrapeService {
 
 		String dereturnStringIGN = new String();
 
-		review.setWebsiteName("Gamespot");
+		review.setWebsiteName("GameSpot");
 		
 		if (!searchString.contains("gamespot")) {
 			return null;
@@ -535,7 +539,7 @@ public class ScrapeService implements IScrapeService {
 
 		try {
 		Document grDoc = Jsoup.connect(searchString).get();
-		if (!searchString.contains("gamesradar")) {
+		if (!searchString.contains("GamesRadar+")) {
 			return null;
 		}
 		String grScoreString = grDoc.select("span.score.score-long").first().text();
@@ -557,7 +561,7 @@ public class ScrapeService implements IScrapeService {
 
 		String dereturnStringInsidegamer = new String();
 
-		review.setWebsiteName("insidegamer");
+		review.setWebsiteName("InsideGamer");
 
 		if (!searchString.contains("insidegamer")) {
 			return null;
@@ -586,7 +590,7 @@ public class ScrapeService implements IScrapeService {
 
 		String dereturnStringPowerUnlimited = new String();
 
-		review.setWebsiteName("powerunlimited");
+		review.setWebsiteName("PowerUnlimited");
 		
 		if (!searchString.contains("pu")) {
 			return null;
@@ -614,7 +618,7 @@ public class ScrapeService implements IScrapeService {
 
 		String dereturnStringXGN = new String();
 
-		review.setWebsiteName("xgn");
+		review.setWebsiteName("XGN");
 		if (!searchString.contains("xgn")) {
 			return null;
 		}
@@ -701,7 +705,7 @@ public class ScrapeService implements IScrapeService {
 
 		String dereturnGameplanet = new String();
 
-		review.setWebsiteName("gameplanet");
+		review.setWebsiteName("Gameplanet");
 
 		if (!searchString.contains("gameplanet")) {
 			return null;
@@ -726,7 +730,7 @@ public class ScrapeService implements IScrapeService {
 
 		String destructoidToString = new String();
 
-		review.setWebsiteName("destructoid");
+		review.setWebsiteName("Destructoid");
 		if (!searchString.contains("destructoid")) {
 			return null;
 		}
@@ -751,7 +755,7 @@ public class ScrapeService implements IScrapeService {
 
 		String impulseToString = new String();
 
-		review.setWebsiteName("impulsegamer");
+		review.setWebsiteName("Impulse Gamer");
 		if (!searchString.contains("impulsegamer")) {
 			return null;
 		}
