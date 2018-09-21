@@ -7,7 +7,10 @@ import com.reviewscraper.games.models.Game;
 public class gameTitleDTO {
 
 	private boolean success;
+	
 	private List<Game> foundGames;
+	
+	
 	private String message;
 	
 	
@@ -18,16 +21,22 @@ public class gameTitleDTO {
 	public void setSuccess(boolean success) {
 		this.success = success;
 	}
+	
 	public List<Game> getFoundGames() {
 		return foundGames;
 	}
 	public void setFoundGames(List<Game> foundGames) {
 		this.foundGames = foundGames;
 	}
+	
 	public String getMessage() {
 		return message;
 	}
 	public void setMessage(String message) {
 		this.message = message;
 	}
+	
+	
+	
+	
 }

@@ -33,6 +33,9 @@ public class GameController {
 		List<Game> foundGames = new ArrayList<Game>();
 		for(Game game : iGameService.findAll()) {
 			if(game.getGameTitle().contains(gameTitle)) {
+				
+				
+				
 				foundGames.add(game);
 			}
 
@@ -43,6 +46,7 @@ public class GameController {
 		}
 		else {
 			dummy.setFoundGames(foundGames);
+			
 			dummy.setMessage("Match found");
 			dummy.setSuccess(true);
 		}
@@ -108,6 +112,13 @@ public class GameController {
 			gametitleDTO.setSuccess(false);
 		}
 		else {
+			
+			
+			
+			
+			
+			
+			
 			gametitleDTO.setFoundGames(foundGames);
 			gametitleDTO.setMessage("Match found");
 			gametitleDTO.setSuccess(true);
