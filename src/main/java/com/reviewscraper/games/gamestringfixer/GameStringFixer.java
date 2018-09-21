@@ -41,8 +41,8 @@ public class GameStringFixer {
 			
 			
 
-			String inputZonderSpatieofStreep = input.replaceAll("[- +]", "");
-			String gameinDatabaseZonderSpatieofStreep = gameinDatabase.replaceAll("[- +]", "");
+			String inputZonderSpatieofStreep = input.replaceAll("[- +]", "").toLowerCase();
+			String gameinDatabaseZonderSpatieofStreep = gameinDatabase.replaceAll("[- +]", "").toLowerCase();
 			
 			
 			System.out.println("hieronder de string van de cosine: " + inputZonderSpatieofStreep+ " en " +gameinDatabaseZonderSpatieofStreep );

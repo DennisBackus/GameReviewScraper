@@ -439,7 +439,7 @@ public class ScrapeService implements IScrapeService {
 				gameReleaseDate = "not found";
 			}
 			System.out.println("Date doet ie nog");
-			String gameTitle = doc.select("h1.page-title").first().text().toLowerCase();
+			String gameTitle = doc.select("h1.page-title").first().text();
 			System.out.println("Titel doet ie nog");
 			
 			
