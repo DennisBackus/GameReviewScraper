@@ -418,7 +418,7 @@ public class ScrapeService implements IScrapeService {
 			System.out.println(title);
 
 			//Element linkReviewSite = doc.select("div.review-summary-score").first();
-
+System.out.println("dereturnString gameinformer gaat nu beginnen!");
 			dereturnStringGameinformer = doc.select("div.review-summary-score").text();
 
 

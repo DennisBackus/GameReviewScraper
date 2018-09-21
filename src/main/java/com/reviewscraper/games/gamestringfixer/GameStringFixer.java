@@ -45,6 +45,13 @@ public class GameStringFixer {
 			String gameinDatabaseZonderSpatieofStreep = gameinDatabase.replaceAll("[- +]", "").toLowerCase();
 			
 			
+			//nieuwe code	
+		//	gameinDatabaseZonderSpatieofStreep = gameinDatabaseZonderSpatieofStreep.
+			
+				
+			//end nieuwe code
+			
+			
 			System.out.println("hieronder de string van de cosine: " + inputZonderSpatieofStreep+ " en " +gameinDatabaseZonderSpatieofStreep );
 			System.out.println("percentage1: "+cosine.apply(inputZonderSpatieofStreep, gameinDatabaseZonderSpatieofStreep));	
 			percentage =  cosine.apply(inputZonderSpatieofStreep, gameinDatabaseZonderSpatieofStreep);
