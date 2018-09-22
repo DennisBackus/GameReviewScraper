@@ -46,16 +46,25 @@ public class GameStringFixer {
 			
 			
 			//nieuwe code	
-		//	gameinDatabaseZonderSpatieofStreep = gameinDatabaseZonderSpatieofStreep.
+			//gameinDatabaseZonderSpatieofStreep = gameinDatabaseZonderSpatieofStreep.
+			StringBuilder convertdatabaseGameName = new StringBuilder(gameinDatabaseZonderSpatieofStreep);
+			String inputSubstring = new StringBuilder(inputZonderSpatieofStreep).substring(0, 3);
+			System.out.println("inputsubstring :  " + inputSubstring);
+			
+			int substringLocation = gameinDatabaseZonderSpatieofStreep.indexOf(inputSubstring);
+			System.out.println("substringLocation: " + substringLocation);
+			String convertdatabaseGameNameString = convertdatabaseGameName.substring(substringLocation , substringLocation + (inputZonderSpatieofStreep.length()));
+			
+			System.out.println("converteddatabaseGameName " + convertdatabaseGameNameString);
+			gameinDatabaseZonderSpatieofStreep = convertdatabaseGameNameString;
 			
 				
 			//end nieuwe code
 			
 			
 			System.out.println("hieronder de string van de cosine: " + inputZonderSpatieofStreep+ " en " +gameinDatabaseZonderSpatieofStreep );
-			System.out.println("percentage1: "+cosine.apply(inputZonderSpatieofStreep, gameinDatabaseZonderSpatieofStreep));	
 			percentage =  cosine.apply(inputZonderSpatieofStreep, gameinDatabaseZonderSpatieofStreep);
-			
+			System.out.println("percentage1: "+percentage);
 			
 			System.out.println("dit is de test om te kijken of de input in de gamedatabase voorkomt!!!");
 			System.out.println("input: " + inputZonderSpatieofStreep + " gamedatabse: " + gameinDatabaseZonderSpatieofStreep);
