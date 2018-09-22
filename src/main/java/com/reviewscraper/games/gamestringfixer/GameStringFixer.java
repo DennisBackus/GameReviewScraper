@@ -35,8 +35,13 @@ public class GameStringFixer {
 			String gameversiongameinDatabase = gameversiongameinDatabasefixiiior3.replaceAll("[^\\.0123456789]","");
 			
 			if ((gameversioninput.equals(gameversiongameinDatabase) || gameversioninput.isEmpty() ) == false) {
+				if (gameversioninput.equals("1") && (gameversiongameinDatabase.isEmpty() || gameversiongameinDatabase.equals("")) ) {
+					System.out.println("eerste versie van de game!");
+					
+				} else {
 				System.out.println("andere versie van game!");
 				return false;
+				}
 			}
 			
 			

@@ -448,6 +448,7 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 			
 			
 			GameStringFixer controle = new GameStringFixer();
+			System.out.println("dannymessage: net voor de controle isgamehetzelfde");
 			boolean isGameWelEchtHetZelfde = controle.fixSearchString(origineleZoekTerm, gameTitle);
 			System.out.println("vanaf hier doet hij de controle of het niet gewoon bullshit is: " + isGameWelEchtHetZelfde);
 			if (!isGameWelEchtHetZelfde) {
