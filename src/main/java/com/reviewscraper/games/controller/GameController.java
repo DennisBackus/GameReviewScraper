@@ -58,22 +58,25 @@ public class GameController {
 	}
 	
 	@GetMapping("/game/all")
-	public List<getAllGamesInListDTO> findAll() {
+	public gameTitleDTO findAll() {
 		
-		List<getAllGamesInListDTO> getAllGamesInListDTO = new ArrayList<getAllGamesInListDTO>();
+		gameTitleDTO dummy = new gameTitleDTO();  // Heb dit even anders gedaan, zodat we met dezelfde tabel in frontend de games uit gameTitleDTIO.foundGames kunnen lezen
+		List<Game> foundGames = new ArrayList<Game>();
 		
-		for (Game game : this.iGameService.findAll()) {
-			getAllGamesInListDTO gamelistDTO = new getAllGamesInListDTO();
-			gamelistDTO.setId(game.getId());
-			gamelistDTO.setGameTitle(game.getGameTitle());
-			gamelistDTO.setId(game.getId());
-			gamelistDTO.setGameStudio(game.getGameStudio());
-			gamelistDTO.setReleaseDate(game.getReleaseDate());
-			
-			getAllGamesInListDTO.add(gamelistDTO);
+		for (Game game : this.iGameService.findAll()) { 
+			foundGames.add(game);			
 		}
-		
-		return getAllGamesInListDTO;
+		if(foundGames.isEmpty()) {
+			dummy.setMessage("Found no matches!");
+			dummy.setSuccess(false);
+		}
+		else {
+			dummy.setFoundGames(foundGames);
+			
+			dummy.setMessage("Match found");
+			dummy.setSuccess(true);
+		}
+		return dummy;
 		
 		//return this.iPersonService.findAll();
 	}
