@@ -26,7 +26,20 @@ import com.reviewscraper.games.models.Review;
 
 
 @Service
-public class ScrapeService implements IScrapeService {
+public class ScrapeService implements IScrapeService , Runnable {
+	
+	//thread specific variables
+	private static List<Review> deReviews = new ArrayList<Review>();
+	
+	private String treadSearchString; 
+	private String treadName;
+	private Game treadGame;
+	private String treadDeReviewSite;
+	
+	
+	//end trhead specific variables
+	
+	
 	
 	private int maxTries = 0;
 
@@ -54,6 +67,18 @@ public class ScrapeService implements IScrapeService {
 	}
 
 
+	public ScrapeService () {
+		super();
+	}
+	
+	public ScrapeService (String treadSearchString, Review treadReview, Game treadGame,	String treadDeReviewSite, String treadName) {
+		this.treadSearchString = treadSearchString;
+		this.treadGame = treadGame;
+		this.treadDeReviewSite = treadDeReviewSite;
+		this.treadName = treadName;
+	}
+	
+	
 
 	public String getScrapeService(String searchString) {
 		System.out.println("getScrapeservice wordt gestart!!!");
@@ -104,55 +129,54 @@ public class ScrapeService implements IScrapeService {
 			//nieuweGame.setReleaseDate("nog niet implemented");
 
 			try {
-			//deReviews.add
+				
+			
 			Review reviewGameinformer = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameinformer");
-			deReviews.add(reviewGameinformer);
-
-			Review reviewIGN = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "ign");
-			deReviews.add(reviewIGN);
-
-			Review reviewGamespot = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "gamespot");
-			deReviews.add(reviewGamespot);
-
-			Review reviewGamesradar = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "gamesradar");
-			deReviews.add(reviewGamesradar);
+			this.deReviews.add(reviewGameinformer);
+	
 			
-			Review reviewInsidegamer = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "insidegamer");
-			deReviews.add(reviewInsidegamer);
+			//ScrapeService service = new ScrapeService();
+			String [] reviewSites = {"ign", "gamespot", "gamesradar", "insidegamer", "powerunlimited", "xgn", "gamer.nl", "levelup.com",  "gameplanet", "destructoid", "impulsegamer" };
 			
-			Review reviewPowerUnlimited = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "powerunlimited");
-			deReviews.add(reviewPowerUnlimited);			
-
-			Review reviewXGN= this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "xgn");
-			deReviews.add(reviewXGN);	
-
-			Review reviewGNL= this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "gamer.nl");
-			deReviews.add(reviewGNL);
+			long start = System.currentTimeMillis();
 			
-			Review reviewLUP= this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "levelup.com");
-			deReviews.add(reviewLUP);
+			int naamTread = 0;
+			List<Thread> treads = new ArrayList<Thread>();
+			for (String site : reviewSites) {
+			Thread service1 = new Thread(new ScrapeService(nieuweGame.getGameTitle(), new Review(), nieuweGame, site, "naamtread: " + naamTread) , ("naamtread = " + naamTread));
+			service1.setName(("naamtread = " + naamTread));
+			naamTread++;
+			treads.add(service1);
+			System.out.println("op creatie word deze tread gemaakt met de naam:" + service1.getName());
+			}
 			
-			Review reviewgameplanet = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "gameplanet");
-			deReviews.add(reviewgameplanet);
+			for (Thread treddie : treads) {
+				treddie.run();
+			}
 			
-			Review reviewdestructoid = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "destructoid");
-			deReviews.add(reviewdestructoid);
-			
-			Review reviewImpulsegamer = this.getgoogleSearch(nieuweGame.getGameTitle(), new Review(), nieuweGame, "impulsegamer");
-			deReviews.add(reviewImpulsegamer);
-			
-			
+			for (Thread treddie : treads) {
+				try {
+					treddie.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			long end = System.currentTimeMillis();
+			System.out.println("Took : " + ((end - start) / 1000));
 			
 			//deReviews.add(this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign"));
 			System.out.println("nieuwegame.gametitle is: " + nieuweGame.getGameTitle());
 
-			nieuweGame.setAvgScore(getScoreTypeFromReviews(deReviews, nieuweGame));
+			System.out.println("de reviews static: " + this.deReviews);
 			
-			nieuweGame.setReviews(deReviews);
+			nieuweGame.setAvgScore(getScoreTypeFromReviews(this.deReviews, nieuweGame));
+			
+			nieuweGame.setReviews(this.deReviews);
 
 			igameService.create(nieuweGame);     					//dit is de methodcall waarbij daadwerkelijk de game word toegevoegd aan de database
-
-			for (Review reviewinList : deReviews) {
+			
+			for (Review reviewinList : this.deReviews) {
 				this.create(reviewinList);					
 			}
 
@@ -268,6 +292,7 @@ public class ScrapeService implements IScrapeService {
 				
 				try {
 				reviewScoreOutput = this.getSiteReview(meegeleverd, review, deReviewSite, game, searchString); //en voor de andere sites? 
+				
 				if (reviewScoreOutput.equals("null")) {
 					System.out.println("de GameNotTheSameException is trowns!!!");
 					throw new GameNotTheSameException();
@@ -328,8 +353,8 @@ public class ScrapeService implements IScrapeService {
 	}
 
 
-
-
+	
+	
 	public String getSiteReview(String degameString, Review review, String reviewSite, Game game, String origineleZoekTerm) {
 		String dereturnScore = new String();
 
@@ -776,6 +801,31 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 		return impulseToString;
 
 	} //end getgameplanetReview
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+		System.out.println("test1: nu runt tread: " + treadName);
+		
+		try {
+		
+			System.out.println("test2: nu runt tread: " + treadName);
+		
+		Review review = this.getgoogleSearch(treadSearchString, new Review(), treadGame, treadDeReviewSite);
+		deReviews.add(review);
+		
+		System.out.println("test3: nu runt tread: " + treadName);
+		
+		} catch (GameNotTheSameException ex) {
+			ex.printStackTrace();
+			System.out.println("game not found");
+		}
+		
+		System.out.println("test4: nu runt tread en is klaar!: " + treadName);
+		
+		
+	}
 	
 	
 	
