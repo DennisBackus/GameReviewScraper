@@ -48,10 +48,9 @@ public class GameStringFixer {
 
 			String inputZonderSpatieofStreep = input.replaceAll("[- +]", "").toLowerCase();
 			String gameinDatabaseZonderSpatieofStreep = gameinDatabase.replaceAll("[- +]", "").toLowerCase();
+			gameinDatabaseZonderSpatieofStreep = gameinDatabaseZonderSpatieofStreep.replace('é', 'e');
+			inputZonderSpatieofStreep = inputZonderSpatieofStreep.replace('é', 'e');
 			
-			
-			//nieuwe code	
-			//gameinDatabaseZonderSpatieofStreep = gameinDatabaseZonderSpatieofStreep.
 			StringBuilder convertdatabaseGameName = new StringBuilder(gameinDatabaseZonderSpatieofStreep);
 			String inputSubstring = new StringBuilder(inputZonderSpatieofStreep).substring(0, 3);
 			System.out.println("inputsubstring :  " + inputSubstring);
@@ -64,7 +63,7 @@ public class GameStringFixer {
 			gameinDatabaseZonderSpatieofStreep = convertdatabaseGameNameString;
 			
 				
-			//end nieuwe code
+		
 			
 			
 			System.out.println("hieronder de string van de cosine: " + inputZonderSpatieofStreep+ " en " +gameinDatabaseZonderSpatieofStreep );
@@ -104,8 +103,114 @@ public class GameStringFixer {
 		
 		return false;
 		}
-	}
+	} //end fix searchstring
+	
+	public boolean getgameinformerStringFixer (String input, String gameinDatabase) {
+		
+		
+		System.out.println("getgaminformerStringFixer");
+		if (this.fixSearchString(input, gameinDatabase)) {				//dit stuk moet uiteindelijk wel flase zijn!
+			
+			System.out.println("if this.fixersearchstring is true!");
+			
+			
+			StringBuilder inputBuilder = new StringBuilder(inputOrOutputZonderSpatieOfStreep(input).toLowerCase());
+			StringBuilder gameinDatabaseBuilder = new StringBuilder(inputOrOutputZonderSpatieOfStreep(gameinDatabase).toLowerCase());
+			
+			char [] gameInDatabaseChars = new char [gameinDatabaseBuilder.length() + 1];
+			
+			gameinDatabaseBuilder.getChars(0, gameinDatabaseBuilder.length(), gameInDatabaseChars, 0);
+			String tijdelijkeString = "";
+			double percentageNu = 0.0;
+			for (char x :gameInDatabaseChars) {
+				tijdelijkeString = tijdelijkeString + x;
+				
+				//je moet in elke loop kijken hoeveel procent de string gelijk is met elkaar!
+				try {
+				System.out.println("this inputzonderspatie of streep input: " + this.inputOrOutputZonderSpatieOfStreep(input));
+				System.out.println("this inputzonderspatie of streep tijdelijkeString: " + this.inputOrOutputZonderSpatieOfStreep(tijdelijkeString));
+				System.out.println("getsubstringofdatabase: " + this.getSubStringofDataBase(this.inputOrOutputZonderSpatieOfStreep(input), this.inputOrOutputZonderSpatieOfStreep(tijdelijkeString)));
+				
+				
+				double percentagenieuw = this.percentageCalculator(this.inputOrOutputZonderSpatieOfStreep(input.toLowerCase()), this.getSubStringofDataBase(this.inputOrOutputZonderSpatieOfStreep(input.toLowerCase()), this.inputOrOutputZonderSpatieOfStreep(tijdelijkeString.toLowerCase())));
+				if (percentagenieuw > percentageNu) {
+					percentageNu = percentagenieuw;
+				} else if (percentagenieuw < percentageNu) {
+					System.out.println("neee hij is kleiner geworden!");
+					return false;
+				}
+				
+				System.out.println("dannymessage: percentage nu = " +percentageNu);
+				
+				} catch (Exception ex) {
+					System.out.println("deze string is niet zo goed!!");
+					System.out.println("dannymessage: percentage nu = " +percentageNu);
+				}
+				
+				
+				
+			} //end forloop
+			System.out.println("dit zijn de chars: " + tijdelijkeString );
+			
+			
+			
+			
+			
+			return true;
+			
+			
+		} //end if 
+		
+		
+		return false;
+	} //end get game informer string
 	
 	
+	 private double percentageCalculator (String input, String datbaseString) {
+		 JaroWinklerDistance cosine = new JaroWinklerDistance();
+		double percentage = 0.0;
+		 
+		 System.out.println("hieronder de string van de cosine: " + input+ " en " +datbaseString );
+		percentage =  cosine.apply(input, datbaseString);
+		System.out.println("percentage1: "+percentage);
+		
+		
+		return percentage;
+	} //end percentage calculator
+	 
+	 
+	 private String inputOrOutputZonderSpatieOfStreep (String theString) {
+		 
+		 	String theStringZonderSpatieofStreep = theString.replaceAll("[- +]", "").toLowerCase();
+		 	theStringZonderSpatieofStreep = theString.replace('é', 'e');
+		 
+		 System.out.println("inputOrOutputZonderSpatieOfStreep: " + theStringZonderSpatieofStreep);
+		 return theStringZonderSpatieofStreep;
+	 } //end input or output zonderspatie of streep
+	 
 	
-}
+	 private String getSubStringofDataBase (String left, String right) {
+		 
+		 	System.out.println("getSubStringofDataBase");
+			StringBuilder convertdatabaseGameName = new StringBuilder(right.toLowerCase());
+			System.out.println("getSubStringofDataBase right: " + right.toLowerCase() );
+			String inputSubstring = new StringBuilder(left.toLowerCase()).substring(0, 3);
+			System.out.println("inputsubstring :  " + inputSubstring);
+			
+			
+			int substringLocation = right.toLowerCase().indexOf(inputSubstring);
+			System.out.println("substringLocation: " + substringLocation);
+			String convertdatabaseGameNameString = convertdatabaseGameName.substring(substringLocation , (convertdatabaseGameName.length()));
+			
+		 System.out.println("getSubStringofDataBase: " + convertdatabaseGameNameString );
+		 
+		 return convertdatabaseGameNameString;
+		 
+	 }
+	 
+	 
+	 
+	 
+	
+	
+} //end class

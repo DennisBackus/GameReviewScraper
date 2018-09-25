@@ -27,20 +27,20 @@ import com.reviewscraper.games.models.Review;
 
 @Service
 public class ScrapeService implements IScrapeService , Runnable {
-	
-	
-	
+
+
+
 	//thread specific variables
 	private static List<Review> deReviews = new ArrayList<Review>();
-	
+
 	private String treadSearchString; 
 	private String treadName;
 	private Game treadGame;
 	private String treadDeReviewSite;
 	//end trhead specific variables
-	
-	
-	
+
+
+
 	private int maxTries = 0;
 
 	private String zoekStringZonderPlusjes;
@@ -70,15 +70,15 @@ public class ScrapeService implements IScrapeService , Runnable {
 	public ScrapeService () {
 		super();
 	}
-	
+
 	public ScrapeService (String treadSearchString, Review treadReview, Game treadGame,	String treadDeReviewSite, String treadName) {
 		this.treadSearchString = treadSearchString;
 		this.treadGame = treadGame;
 		this.treadDeReviewSite = treadDeReviewSite;
 		this.treadName = treadName;
 	}
-	
-	
+
+
 
 	public String getScrapeService(String searchString) {
 		System.out.println("getScrapeservice wordt gestart!!!");
@@ -96,11 +96,12 @@ public class ScrapeService implements IScrapeService , Runnable {
 		String zoekGamename = origineleZoekString.replace(" ", "+");
 
 		GameStringFixer gamestringfixer = new GameStringFixer();
-		
-		List<Game> gevondenGames = searchGamesInDatabase(allGamesInDatabase, gamepie -> gamestringfixer.fixSearchString(zoekStringZonderPlusjes, gamepie.getGameTitle()));
+
+		//List<Game> gevondenGames = searchGamesInDatabase(allGamesInDatabase, gamepie -> gamestringfixer.fixSearchString(zoekStringZonderPlusjes, gamepie.getGameTitle()));
+		List<Game> gevondenGames = searchGamesInDatabase(allGamesInDatabase, gamepie -> gamestringfixer.getgameinformerStringFixer(zoekStringZonderPlusjes, gamepie.getGameTitle()));
 		System.out.println("lambda met de gevonden games: " + gevondenGames);
-		
-		
+
+
 		for (Game gameInDatabase : allGamesInDatabase) {
 			System.out.println("voor elke game word geprint:" + gameInDatabase.getGameTitle());
 			//gameInDatabase.getGameTitle().contains(searchString)
@@ -129,69 +130,69 @@ public class ScrapeService implements IScrapeService , Runnable {
 			//nieuweGame.setReleaseDate("nog niet implemented");
 
 			try {
-				
-			
-			Review reviewGameinformer = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameinformer");
-			this.deReviews.add(reviewGameinformer);
-	
-			
-			//ScrapeService service = new ScrapeService();
-			String [] reviewSites = {"ign", "gamespot", "gamesradar", "insidegamer", "powerunlimited", "xgn", "gamer.nl", "levelup.com",  "gameplanet", "destructoid", "impulsegamer" };
-			
-			long start = System.currentTimeMillis();
-			
-			int naamTread = 0;
-			List<Thread> treads = new ArrayList<Thread>();
-			for (String site : reviewSites) {
-			Thread service1 = new Thread(new ScrapeService(nieuweGame.getGameTitle(), new Review(), nieuweGame, site, "naamtread: " + naamTread) , ("naamtread = " + naamTread));
-			service1.setName(("naamtread = " + naamTread));
-			naamTread++;
-			treads.add(service1);
-			System.out.println("op creatie word deze tread gemaakt met de naam:" + service1.getName());
-			}
-			
-			for (Thread treddie : treads) {
-				treddie.run();
-			}
-			
-			for (Thread treddie : treads) {
-				try {
-					treddie.join();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+
+				Review reviewGameinformer = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameinformer");
+				this.deReviews.add(reviewGameinformer);
+
+
+				//ScrapeService service = new ScrapeService();
+				String [] reviewSites = {"ign", "gamespot", "gamesradar", "insidegamer", "powerunlimited", "xgn", "gamer.nl", "levelup.com",  "gameplanet", "destructoid", "impulsegamer" };
+
+				long start = System.currentTimeMillis();
+
+				int naamTread = 0;
+				List<Thread> treads = new ArrayList<Thread>();
+				for (String site : reviewSites) {
+					Thread service1 = new Thread(new ScrapeService(nieuweGame.getGameTitle(), new Review(), nieuweGame, site, "naamtread: " + naamTread) , ("naamtread = " + naamTread));
+					service1.setName(("naamtread = " + naamTread));
+					naamTread++;
+					treads.add(service1);
+					System.out.println("op creatie word deze tread gemaakt met de naam:" + service1.getName());
 				}
-			}
-			long end = System.currentTimeMillis();
-			System.out.println("Took : " + ((end - start) / 1000));
-			
-			//deReviews.add(this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign"));
-			System.out.println("nieuwegame.gametitle is: " + nieuweGame.getGameTitle());
 
-			System.out.println("de reviews static: " + this.deReviews);
-			
-			nieuweGame.setAvgScore(getScoreTypeFromReviews(this.deReviews, nieuweGame));
-			
-			nieuweGame.setReviews(this.deReviews);
+				for (Thread treddie : treads) {
+					treddie.run();
+				}
 
-			igameService.create(nieuweGame);     					//dit is de methodcall waarbij daadwerkelijk de game word toegevoegd aan de database
-			
-			for (Review reviewinList : this.deReviews) {
-				this.create(reviewinList);					
-			}
+				for (Thread treddie : treads) {
+					try {
+						treddie.join();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				long end = System.currentTimeMillis();
+				System.out.println("Took : " + ((end - start) / 1000));
 
-			//hier word de review daadwerkelijk aan de database toegevoegd
-			System.out.println("review word created!");
+				//deReviews.add(this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign"));
+				System.out.println("nieuwegame.gametitle is: " + nieuweGame.getGameTitle());
+
+				System.out.println("de reviews static: " + this.deReviews);
+
+				nieuweGame.setAvgScore(getScoreTypeFromReviews(this.deReviews, nieuweGame));
+
+				nieuweGame.setReviews(this.deReviews);
+
+				igameService.create(nieuweGame);     					//dit is de methodcall waarbij daadwerkelijk de game word toegevoegd aan de database
+
+				for (Review reviewinList : this.deReviews) {
+					this.create(reviewinList);					
+				}
+
+				//hier word de review daadwerkelijk aan de database toegevoegd
+				System.out.println("review word created!");
 
 
-			return nieuweGame.getGameTitle();
+				return nieuweGame.getGameTitle();
 
 			} catch (GameNotTheSameException ex) {
 				ex.printStackTrace();
 				return "no Game found";
-				
+
 			}
-			
+
 
 		} else { //end if game is in database
 			//dit stuk zoekt in de database naar de al bekende reviews
@@ -210,18 +211,18 @@ public class ScrapeService implements IScrapeService , Runnable {
 	public List<Game> searchGamesInDatabase (List<Game> deSpellen, Predicate<Game> checker) {
 		List<Game> deSpelleninDatabasegevonden = new ArrayList<Game>();
 		for (Game eenSpel : deSpellen) {
-		if (checker.test(eenSpel))
-			deSpelleninDatabasegevonden.add(eenSpel);
-		 }
+			if (checker.test(eenSpel))
+				deSpelleninDatabasegevonden.add(eenSpel);
+		}
 		return deSpelleninDatabasegevonden;
 	}
-	
+
 	public double getScoreTypeFromReviews (List<Review> deReviews, Game game) {
 		List<Double> deScores = new ArrayList<Double>();
 		double deScore = 0;
 		double topScore =0;
 		double lowestScore=10;
-		
+
 		for (Review eenReview : deReviews) {
 			if (eenReview.getReviewScore() != 0) {
 				deScores.add(eenReview.getReviewScore());
@@ -232,11 +233,11 @@ public class ScrapeService implements IScrapeService , Runnable {
 					lowestScore = eenReview.getReviewScore();
 				}
 			}
-			 } //end for loop
-		
+		} //end for loop
+
 		for (double eenScore : deScores) {
 			deScore += eenScore;
-			
+
 		}
 		DecimalFormat df2 = new DecimalFormat(".##");
 		String deScoretijdelijk =  df2.format((deScore/deScores.size()));
@@ -248,7 +249,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 
 
 	public String getInputOfUser () {
-		
+
 		return zoekStringZonderPlusjes;
 	}
 
@@ -266,7 +267,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 		System.out.println("de google search url: " + url);
 
 		System.out.println("vanaf hier doen we dat google ding!");
-		
+
 		try {
 			Document docgoogleconnect = Jsoup.connect(url).get();
 			String title = docgoogleconnect.title();
@@ -278,34 +279,34 @@ public class ScrapeService implements IScrapeService , Runnable {
 
 			List<String> delinksfromGoogle = elementslinksfromGoogle.select("a").eachAttr("href");
 			System.out.println("delinks: " +delinksfromGoogle);
-			
-			
+
+
 			if (delinksfromGoogle.isEmpty() && maxTries < 6) {
 				maxTries++;
 				getgoogleSearch(searchString, review, game, deReviewSite);
-				
+
 			} else {
 				maxTries = 0;
 			}
 
 			for (String meegeleverd : delinksfromGoogle) {
-				
+
 				try {
-				reviewScoreOutput = this.getSiteReview(meegeleverd, review, deReviewSite, game, searchString); //en voor de andere sites? 
-				
-				if (reviewScoreOutput.equals("null")) {
-					System.out.println("de GameNotTheSameException is trowns!!!");
-					throw new GameNotTheSameException();
-					
-				}
+					reviewScoreOutput = this.getSiteReview(meegeleverd, review, deReviewSite, game, searchString); //en voor de andere sites? 
+
+					if (reviewScoreOutput.equals("null")) {
+						System.out.println("de GameNotTheSameException is trowns!!!");
+						throw new GameNotTheSameException();
+
+					}
 				} catch (GameNotTheSameException ex) {
 					throw new GameNotTheSameException();
 				}
-				 catch (Exception ex) {
-					
+				catch (Exception ex) {
+
 				}
-				
-				
+
+
 				System.out.println("elke output2: " + reviewScoreOutput);
 
 				if ((reviewScoreOutput.equals(null) == false) && reviewScoreOutput.equals("") == false) {
@@ -327,17 +328,17 @@ public class ScrapeService implements IScrapeService , Runnable {
 		catch (GameNotTheSameException ex) {
 			throw new GameNotTheSameException();
 		}
-		
+
 		catch (NullPointerException ex) {
 			ex.getMessage();
 		}
-		
-		
+
+
 		catch (Exception ex) {
 
 			System.out.println("helaaas getgoogleSearch is vastgelopen!");
-			
-			
+
+
 		} //end catch
 
 
@@ -353,12 +354,12 @@ public class ScrapeService implements IScrapeService , Runnable {
 	}
 
 
-	
-	
+
+
 	public String getSiteReview(String degameString, Review review, String reviewSite, Game game, String origineleZoekTerm) {
 		String dereturnScore = new String();
 
-		
+
 
 		if (reviewSite.equals("gameinformer")) {
 			dereturnScore = this.getGameinformerReview(degameString, review, game, origineleZoekTerm);
@@ -401,10 +402,10 @@ public class ScrapeService implements IScrapeService , Runnable {
 			dereturnScore = this.getImpulsegamer(degameString, review, game);
 
 		} 
-		
-		
-		
-		
+
+
+
+
 
 		/* 
 
@@ -432,7 +433,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 		String dereturnStringGameinformer = new String();
 
 		review.setWebsiteName("Game Informer");
-		
+
 		if (!searchString.contains("gameinformer")) {
 			return null;
 		}
@@ -441,9 +442,9 @@ public class ScrapeService implements IScrapeService , Runnable {
 			Document doc = Jsoup.connect(searchString).get();
 			String title = doc.title();
 			System.out.println(title);
-			
+
 			//Element linkReviewSite = doc.select("div.review-summary-score").first();
-System.out.println("dereturnString gameinformer gaat nu beginnen!");
+			System.out.println("dereturnString gameinformer gaat nu beginnen!");
 			dereturnStringGameinformer = doc.select("div.review-summary-score").text();
 			System.out.println("Uhm hier zou de review score geparsed moeten worden: " + dereturnStringGameinformer);
 
@@ -454,9 +455,9 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 			System.out.println("dannymessage net foor de set vanaf dennis zn stuk (first().OwnText()!!");
 			String gameStudio = new String();
 			if(doc.select("div.game-details-developer").first().ownText() != null) {
-			 gameStudio = doc.select("div.game-details-developer").first().ownText();}
+				gameStudio = doc.select("div.game-details-developer").first().ownText();}
 			else {
-			 gameStudio = doc.select("div.game-details-publisher").first().ownText();	
+				gameStudio = doc.select("div.game-details-publisher").first().ownText();	
 			}
 			System.out.println("Studio doet ie nog");
 			// String gameReleaseDatet = doc.select("div.game-details-release").first().select("time").first().text();
@@ -470,18 +471,29 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 			System.out.println("Date doet ie nog");
 			String gameTitle = doc.select("h1.page-title").first().text();
 			System.out.println("Titel doet ie nog");
-			
-			
+
+
 			GameStringFixer controle = new GameStringFixer();
 			System.out.println("dannymessage: net voor de controle isgamehetzelfde");
+			
+			//nieuwe code:
+			try {
+			controle.getgameinformerStringFixer(origineleZoekTerm, gameTitle);
+			} catch (Exception ex) {
+				System.out.println("boeie je code heeft een minifout!");
+			}
+			//end nieuwe code
+			
+			
+			
 			boolean isGameWelEchtHetZelfde = controle.fixSearchString(origineleZoekTerm, gameTitle);
 			System.out.println("vanaf hier doet hij de controle of het niet gewoon bullshit is: " + isGameWelEchtHetZelfde);
 			if (!isGameWelEchtHetZelfde) {
 				System.out.println("dannymessage: JA HIJ IS ECHT FALSE HOOR");
 				return "null";
 			}
-			
-			
+
+
 			System.out.println("dannymessage net foor de set gametitle!!");
 			game.setGameTitle(gameTitle);
 			game.setGameStudio(gameStudio);
@@ -512,8 +524,8 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 		if (!searchString.contains("ign")) {
 			return null;
 		}
-		
-		
+
+
 		Document ignDoc;
 		try {
 			ignDoc = Jsoup.connect(searchString).get();
@@ -536,7 +548,7 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 		String dereturnStringIGN = new String();
 
 		review.setWebsiteName("GameSpot");
-		
+
 		if (!searchString.contains("gamespot")) {
 			return null;
 		}
@@ -564,19 +576,19 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 
 
 		try {
-		Document grDoc = Jsoup.connect(searchString).get();
-		if (!searchString.contains("GamesRadar+")) {
-			return null;
-		}
-		String grScoreString = grDoc.select("span.score.score-long").first().text();
-		Double grScore = Double.parseDouble(grScoreString) * 2;
-		dereturnStringGamesradar =  grScore.toString();
-		System.out.println("GamesRader review score is " + grScore);
+			Document grDoc = Jsoup.connect(searchString).get();
+			if (!searchString.contains("GamesRadar+")) {
+				return null;
+			}
+			String grScoreString = grDoc.select("span.score.score-long").first().text();
+			Double grScore = Double.parseDouble(grScoreString) * 2;
+			dereturnStringGamesradar =  grScore.toString();
+			System.out.println("GamesRader review score is " + grScore);
 		} catch (IOException e) {
 			System.out.println("could not find review from Gamesradar");
 
 		} 
-		
+
 
 		return dereturnStringGamesradar;
 
@@ -592,32 +604,32 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 		if (!searchString.contains("insidegamer")) {
 			return null;
 		}
-		
-		
+
+
 		try {
-		Document igDoc = Jsoup.connect(searchString).get();
-		String igScoreString = igDoc.select("div.rating__value").first().text();
-		igScoreString = igScoreString.replaceAll(",", ".");
-		Double igScore = Double.parseDouble(igScoreString);	
-		dereturnStringInsidegamer =  igScore.toString();
-		System.out.println("InsideGamer review score is " + igScore);
-		
+			Document igDoc = Jsoup.connect(searchString).get();
+			String igScoreString = igDoc.select("div.rating__value").first().text();
+			igScoreString = igScoreString.replaceAll(",", ".");
+			Double igScore = Double.parseDouble(igScoreString);	
+			dereturnStringInsidegamer =  igScore.toString();
+			System.out.println("InsideGamer review score is " + igScore);
+
 		} catch (IOException e) {
 			System.out.println("could not find review from Insidegamer");
 
 		}
-		
+
 
 		return dereturnStringInsidegamer;
 
 	}//end getignReview
-	
+
 	public String getPowerUnlimitedReview (String searchString, Review review, Game game) {
 
 		String dereturnStringPowerUnlimited = new String();
 
 		review.setWebsiteName("PowerUnlimited");
-		
+
 		if (!searchString.contains("pu")) {
 			return null;
 		}
@@ -629,17 +641,17 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 			Double puScore = Double.parseDouble(puScoreString)/10;
 			dereturnStringPowerUnlimited = puScore.toString();
 			System.out.println("PowerUnlimited review score is " + puScore);
-		
+
 		} catch (IOException e) {
 			System.out.println("could not find review from Power Unlimited");
 
 		}
-		
+
 
 		return dereturnStringPowerUnlimited; 
 
 	}//end gettingReviewPU
-	
+
 	public String getXGNReview (String searchString, Review review, Game game) {
 
 		String dereturnStringXGN = new String();
@@ -654,17 +666,17 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 			Double xgnScore = Double.parseDouble(xgnscoreS);
 			dereturnStringXGN = xgnScore.toString();
 			System.out.println("xgn review score is " + xgnScore);
-		
+
 		} catch (IOException e) {
 			System.out.println("could not find review from XGN");
 
 		}
-		
+
 
 		return dereturnStringXGN; 
 
 	} //end of xgnReview
-	
+
 	public String getGamerNL(String searchString, Review review, Game game) {
 
 		String dereturnStringGNL = new String();
@@ -674,9 +686,9 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 		if (!searchString.contains("gamer.nl")) {
 			return null;
 		}
-		
-		
-		
+
+
+
 		try {
 			Document gNLDoc = Jsoup.connect(searchString).get();
 			String gNLScoreString = gNLDoc.select("div.rs-review--score").first().child(0).attr("alt");
@@ -684,17 +696,17 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 			Double gNLScore = Double.parseDouble(gNLScoreString)/10;	
 			dereturnStringGNL = gNLScore.toString();
 			System.out.println("GamerNL review score is " + gNLScore);
-		
+
 		} catch (IOException e) {
 			System.out.println("could not find review from Gamer NL");
 
 		}
-		
+
 
 		return dereturnStringGNL; 
 
 	} //end of GamerNLReview
-	
+
 	public String getlevelUP(String searchString, Review review, Game game) {
 
 		String dereturnStringLUP = new String();
@@ -710,16 +722,16 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 			Double levelUpScore = Double.parseDouble(levelUpscoreS);
 			System.out.println("LevelUP review score is " + levelUpScore);
 			dereturnStringLUP = levelUpScore.toString();
-			
 
-		
+
+
 		} catch (IOException e) {
 			System.out.println("could not find review from Gamer NL");
 
 		} catch (Exception ex) {
-			
+
 		}
-		
+
 
 		return dereturnStringLUP; 
 
@@ -750,7 +762,7 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 		return dereturnGameplanet;
 
 	} //end getgameplanetReview
-	
+
 
 	public String getDestructoidReview (String searchString, Review review, Game game) {
 
@@ -765,8 +777,8 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 			Document destructoidDoc = Jsoup.connect(searchString).get();
 			String destructoidscoreS = destructoidDoc.select("div.gscore").first().text();
 			Double destructoidScore = Double.parseDouble(destructoidscoreS);
-			 destructoidToString = destructoidScore.toString();
-			
+			destructoidToString = destructoidScore.toString();
+
 		} catch (IOException e) {
 			System.out.println("could not find review from destructoid");
 
@@ -775,8 +787,8 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 		return destructoidToString;
 
 	} //end getDestructoidReview
-	
-	
+
+
 	public String getImpulsegamer (String searchString, Review review, Game game) {
 
 		String impulseToString = new String();
@@ -791,8 +803,8 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 			String impulsescoreS = impulseDoc.select("div#omc-criteria-final-score").first().text().replaceAll("[^\\.0123456789]","");
 			Double impulseScore = Double.parseDouble(impulsescoreS)*2;
 			impulseToString = impulseScore.toString();
-			
-			
+
+
 		} catch (IOException e) {
 			System.out.println("could not find review from Impulsegamer");
 
@@ -805,32 +817,32 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+
 		System.out.println("test1: nu runt tread: " + treadName);
-		
+
 		try {
-		
+
 			System.out.println("test2: nu runt tread: " + treadName);
-		
-		Review review = this.getgoogleSearch(treadSearchString, new Review(), treadGame, treadDeReviewSite);
-		deReviews.add(review);
-		
-		System.out.println("test3: nu runt tread: " + treadName);
-		
+
+			Review review = this.getgoogleSearch(treadSearchString, new Review(), treadGame, treadDeReviewSite);
+			deReviews.add(review);
+
+			System.out.println("test3: nu runt tread: " + treadName);
+
 		} catch (GameNotTheSameException ex) {
 			ex.printStackTrace();
 			System.out.println("game not found");
 		}
-		
+
 		System.out.println("test4: nu runt tread en is klaar!: " + treadName);
-		
-		
+
+
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 
 
 
