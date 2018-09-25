@@ -1,4 +1,4 @@
-package com.reviewscraper.games.dto;
+	package com.reviewscraper.games.dto;
 
 import java.util.List;
 
