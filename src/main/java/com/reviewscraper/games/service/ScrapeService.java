@@ -28,6 +28,8 @@ import com.reviewscraper.games.models.Review;
 @Service
 public class ScrapeService implements IScrapeService , Runnable {
 	
+	
+	
 	//thread specific variables
 	private static List<Review> deReviews = new ArrayList<Review>();
 	
@@ -35,8 +37,6 @@ public class ScrapeService implements IScrapeService , Runnable {
 	private String treadName;
 	private Game treadGame;
 	private String treadDeReviewSite;
-	
-	
 	//end trhead specific variables
 	
 	

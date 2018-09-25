@@ -35,7 +35,7 @@ public class GameStringFixer {
 			String gameversiongameinDatabase = gameversiongameinDatabasefixiiior3.replaceAll("[^\\.0123456789]","");
 			
 			if ((gameversioninput.equals(gameversiongameinDatabase) || gameversioninput.isEmpty() ) == false) {
-				if (gameversioninput.equals("1") && (gameversiongameinDatabase.isEmpty() || gameversiongameinDatabase.equals("")) ) {
+				if (gameversioninput.equals("1") && ((gameversiongameinDatabase.isEmpty() || gameversiongameinDatabase.equals("") ) || gameversiongameinDatabasefixiiior3.contains("remastered")  )  ) {
 					System.out.println("eerste versie van de game!");
 					
 				} else {
