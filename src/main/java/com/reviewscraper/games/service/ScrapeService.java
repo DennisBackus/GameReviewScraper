@@ -132,7 +132,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 				
 			
 			Review reviewGameinformer = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameinformer");
-			this.deReviews.add(reviewGameinformer);
+			deReviews.add(reviewGameinformer);
 	
 			
 			//ScrapeService service = new ScrapeService();
@@ -556,7 +556,7 @@ System.out.println("dereturnString gameinformer gaat nu beginnen!");
 
 	} //end getignReview
 
-	public String getGamesradarReview (String searchString, Review review, Game game) {
+	public String getGamesradarReview (String searchString, Review review, Game game) { 
 
 		String dereturnStringGamesradar = new String();
 
