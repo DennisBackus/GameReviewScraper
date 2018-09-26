@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.reviewscraper.games.dto.gameTitleDTO;
 import com.reviewscraper.games.dto.getAllGamesInListDTO;
+import com.reviewscraper.games.dto.suggestTitleDTO;
 import com.reviewscraper.games.gamestringfixer.GameStringFixer;
 import com.reviewscraper.games.models.Game;
 import com.reviewscraper.games.service.IGameService;
@@ -80,6 +83,25 @@ public class GameController {
 		
 		//return this.iPersonService.findAll();
 	}
+	
+	
+	@GetMapping("/game/titlesuggest/{input}")
+	public suggestTitleDTO titleDTO(@PathVariable String input){
+		suggestTitleDTO dummy = new suggestTitleDTO();
+		GameStringFixer fixer = new GameStringFixer();
+		List<String> foundTitles = new ArrayList<String>();
+		System.out.println("input:  " + input);
+		for(Game game : this.iGameService.findAll()) {
+			if(fixer.fixSearchString(input, game.getGameTitle())) {
+				System.out.println(" game " + game.getGameTitle());
+				foundTitles.add(game.getGameTitle());
+			}
+			
+		}
+		dummy.setTitles(foundTitles);
+		return dummy;
+	}
+	
 	
 	@GetMapping("/game/scrape/{gameTitle}")
 	public gameTitleDTO findGameReview(@PathVariable String gameTitle) {
