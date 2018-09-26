@@ -274,7 +274,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 		System.out.println("vanaf hier doen we dat google ding!");
 
 		try {
-			Document docgoogleconnect = Jsoup.connect(url).get();
+			Document docgoogleconnect = Jsoup.connect(url).userAgent("Mozilla/17.0").get();
 			String title = docgoogleconnect.title();
 			System.out.println(title);
 
