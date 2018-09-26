@@ -107,7 +107,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 			System.out.println("voor elke game word geprint:" + gameInDatabase.getGameTitle());
 			//gameInDatabase.getGameTitle().contains(searchString)
 			try {
-				if (gamestringfixer.fixSearchString(zoekStringZonderPlusjes, gameInDatabase.getGameTitle())) {
+				if (gamestringfixer.getAdvancedStringFixer(zoekStringZonderPlusjes, gameInDatabase.getGameTitle())) {
 					System.out.println("gameInDatabase: de gametitel = " + gameInDatabase.getGameTitle());
 					foundGame = gameInDatabase.getGameTitle();
 					isgameinDatabase = true;
