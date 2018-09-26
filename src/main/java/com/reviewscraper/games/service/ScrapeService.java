@@ -267,7 +267,9 @@ public class ScrapeService implements IScrapeService {
 		System.out.println("vanaf hier doen we dat google ding!");
 
 		try {
+
 			Document docgoogleconnect = Jsoup.connect(url).timeout(30000).userAgent("Mozilla/5.0 (Windows NT 5.1; rv:7.0.1) Gecko/20100101 Firefox/7.0.1").get();
+
 			String title = docgoogleconnect.title();
 			System.out.println(title);
 
