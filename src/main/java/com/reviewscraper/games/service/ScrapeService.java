@@ -25,7 +25,7 @@ import com.reviewscraper.games.models.Review;
 
 
 @Service
-public class ScrapeService implements IScrapeService , Runnable {
+public class ScrapeService implements IScrapeService {
 
 
 
@@ -143,29 +143,22 @@ public class ScrapeService implements IScrapeService , Runnable {
 				long start = System.currentTimeMillis();
 
 				int naamTread = 0;
-				List<Thread> treads = new ArrayList<Thread>();
+				//List<Thread> treads = new ArrayList<Thread>();
 				for (String site : reviewSites) {
-					Thread service1 = new Thread(new ScrapeService(nieuweGame.getGameTitle(), new Review(), nieuweGame, site, "naamtread: " + naamTread) , ("naamtread = " + naamTread));
-					service1.setName(("naamtread = " + naamTread));
-					naamTread++;
-					treads.add(service1);
-					System.out.println("op creatie word deze tread gemaakt met de naam:" + service1.getName());
-				}
-	
-			
-			for (Thread treddie : treads) {
-				treddie.run();
-			}
-			
-			for (Thread treddie : treads) {
-				try {
-					treddie.join();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					ScrapeService serviess = new ScrapeService(nieuweGame.getGameTitle(), new Review(), nieuweGame, site, "naamtread: " + naamTread);
+					
+					serviess.runit();
+					
 					
 				}
-			}
+	
 
 	
 				long end = System.currentTimeMillis();
@@ -274,7 +267,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 		System.out.println("vanaf hier doen we dat google ding!");
 
 		try {
-			Document docgoogleconnect = Jsoup.connect(url).get();
+			Document docgoogleconnect = Jsoup.connect(url).timeout(30000).userAgent("Mozilla/5.0 (Windows NT 5.1; rv:7.0.1) Gecko/20100101 Firefox/7.0.1").get();
 			String title = docgoogleconnect.title();
 			System.out.println(title);
 
@@ -820,8 +813,8 @@ public class ScrapeService implements IScrapeService , Runnable {
 
 	} //end getgameplanetReview
 
-	@Override
-	public void run() {
+	
+	public void runit() {
 		// TODO Auto-generated method stub
 
 		System.out.println("test1: nu runt tread: " + treadName);
