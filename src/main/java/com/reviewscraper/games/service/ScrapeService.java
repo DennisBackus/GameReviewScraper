@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -124,7 +123,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 		if (isgameinDatabase == false) {
 			//dit stuk creerd een nieuwe review die gescraped word van het internet
 
-			List<Review> deReviews = new ArrayList<Review>();
+			//List<Review> deReviews = new ArrayList<Review>();
 
 			Game nieuweGame = new Game();
 			//nieuweGame.setGameTitle(origineleZoekString);
@@ -132,10 +131,10 @@ public class ScrapeService implements IScrapeService , Runnable {
 			//nieuweGame.setReleaseDate("nog niet implemented");
 
 			try {
-
-
+				
+			
 				Review reviewGameinformer = this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "gameinformer");
-				this.deReviews.add(reviewGameinformer);
+				deReviews.add(reviewGameinformer);
 
 
 				//ScrapeService service = new ScrapeService();
@@ -152,34 +151,38 @@ public class ScrapeService implements IScrapeService , Runnable {
 					treads.add(service1);
 					System.out.println("op creatie word deze tread gemaakt met de naam:" + service1.getName());
 				}
-
-				for (Thread treddie : treads) {
-					treddie.run();
+	
+			
+			for (Thread treddie : treads) {
+				treddie.run();
+			}
+			
+			for (Thread treddie : treads) {
+				try {
+					treddie.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					
 				}
+			}
 
-				for (Thread treddie : treads) {
-					try {
-						treddie.join();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+	
 				long end = System.currentTimeMillis();
 				System.out.println("Took : " + ((end - start) / 1000));
 
 				//deReviews.add(this.getgoogleSearch(zoekGamename, new Review(), nieuweGame, "ign"));
 				System.out.println("nieuwegame.gametitle is: " + nieuweGame.getGameTitle());
 
-				System.out.println("de reviews static: " + this.deReviews);
+				System.out.println("de reviews static: " + deReviews);
 
-				nieuweGame.setAvgScore(getScoreTypeFromReviews(this.deReviews, nieuweGame));
+				nieuweGame.setAvgScore(getScoreTypeFromReviews(deReviews, nieuweGame));
 
-				nieuweGame.setReviews(this.deReviews);
+				nieuweGame.setReviews(deReviews);
 
 				igameService.create(nieuweGame);     					//dit is de methodcall waarbij daadwerkelijk de game word toegevoegd aan de database
 
-				for (Review reviewinList : this.deReviews) {
+				for (Review reviewinList : deReviews) {
 					this.create(reviewinList);					
 				}
 
@@ -189,7 +192,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 
 				return nieuweGame.getGameTitle();
 
-			} catch (GameNotTheSameException ex) {
+			}  catch (GameNotTheSameException ex) {
 				ex.printStackTrace();
 				return "no Game found";
 
@@ -203,7 +206,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 
 		} // end else
 
-
+		
 
 
 	} //end main
@@ -570,7 +573,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 
 	} //end getignReview
 
-	public String getGamesradarReview (String searchString, Review review, Game game) {
+	public String getGamesradarReview (String searchString, Review review, Game game) { 
 
 		String dereturnStringGamesradar = new String();
 
