@@ -342,6 +342,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 		catch (Exception ex) {
 
 			System.out.println("helaaas getgoogleSearch is vastgelopen!");
+			ex.printStackTrace();
 
 
 		} //end catch
