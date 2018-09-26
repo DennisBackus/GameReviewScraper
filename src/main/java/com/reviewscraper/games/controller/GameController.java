@@ -90,10 +90,9 @@ public class GameController {
 		suggestTitleDTO dummy = new suggestTitleDTO();
 		GameStringFixer fixer = new GameStringFixer();
 		List<String> foundTitles = new ArrayList<String>();
-		System.out.println("input:  " + input);
 		for(Game game : this.iGameService.findAll()) {
 			if(fixer.fixSearchString(input, game.getGameTitle())) {
-				System.out.println(" game " + game.getGameTitle());
+				
 				foundTitles.add(game.getGameTitle());
 			}
 			
