@@ -116,7 +116,7 @@ public class GameController {
 		
 		
 		
-		List<Game> foundGames = iscrapeService.searchGamesInDatabase(iGameService.findAll(), gamepie -> deGameStringFixer.fixSearchString(zoekStringZonderPlusjes, gamepie.getGameTitle()));
+		List<Game> foundGames = iscrapeService.searchGamesInDatabase(iGameService.findAll(), gamepie -> deGameStringFixer.getAdvancedStringFixer(zoekStringZonderPlusjes, gamepie.getGameTitle()));
 		System.out.println("lambda met de gevonden games: " + foundGames);
 		//foundGames.addAll(gevondenGames);
 		
