@@ -136,8 +136,9 @@ public class GameStringFixer {
 				if (percentagenieuw > percentageNu) {
 					percentageNu = percentagenieuw;
 				} else if (percentagenieuw < percentageNu) {
-					if (x == ' ') {
-						
+					if (tijdelijkeString.length() > input.toLowerCase().length()) {
+						System.out.println("tijdelijke string is langer!!");
+						break;
 					} else {
 					System.out.println("neee hij is kleiner geworden!");
 					return false;
