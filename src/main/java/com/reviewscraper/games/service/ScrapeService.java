@@ -81,6 +81,8 @@ public class ScrapeService implements IScrapeService , Runnable {
 
 
 	public String getScrapeService(String searchString) {
+		deReviews.clear();
+		
 		System.out.println("getScrapeservice wordt gestart!!!");
 
 
@@ -98,7 +100,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 		GameStringFixer gamestringfixer = new GameStringFixer();
 
 		//List<Game> gevondenGames = searchGamesInDatabase(allGamesInDatabase, gamepie -> gamestringfixer.fixSearchString(zoekStringZonderPlusjes, gamepie.getGameTitle()));
-		List<Game> gevondenGames = searchGamesInDatabase(allGamesInDatabase, gamepie -> gamestringfixer.getgameinformerStringFixer(zoekStringZonderPlusjes, gamepie.getGameTitle()));
+		List<Game> gevondenGames = searchGamesInDatabase(allGamesInDatabase, gamepie -> gamestringfixer.getAdvancedStringFixer(zoekStringZonderPlusjes, gamepie.getGameTitle()));
 		System.out.println("lambda met de gevonden games: " + gevondenGames);
 
 
@@ -478,7 +480,7 @@ public class ScrapeService implements IScrapeService , Runnable {
 			
 			//nieuwe code:
 			try {
-			controle.getgameinformerStringFixer(origineleZoekTerm, gameTitle);
+			controle.getAdvancedStringFixer(origineleZoekTerm, gameTitle);
 			} catch (Exception ex) {
 				System.out.println("boeie je code heeft een minifout!");
 			}

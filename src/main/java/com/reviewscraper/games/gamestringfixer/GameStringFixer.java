@@ -105,7 +105,7 @@ public class GameStringFixer {
 		}
 	} //end fix searchstring
 	
-	public boolean getgameinformerStringFixer (String input, String gameinDatabase) {
+	public boolean getAdvancedStringFixer (String input, String gameinDatabase) {
 		
 		
 		System.out.println("getgaminformerStringFixer");
@@ -136,8 +136,12 @@ public class GameStringFixer {
 				if (percentagenieuw > percentageNu) {
 					percentageNu = percentagenieuw;
 				} else if (percentagenieuw < percentageNu) {
+					if (x == ' ') {
+						
+					} else {
 					System.out.println("neee hij is kleiner geworden!");
 					return false;
+					}
 				}
 				
 				System.out.println("dannymessage: percentage nu = " +percentageNu);
